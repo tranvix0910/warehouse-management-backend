@@ -1,0 +1,151 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Warehouse Management API",
+    "version": "1.0.0",
+    "description": "API cho hệ thống quản lý kho"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:4000",
+      "description": "Local server"
+    }
+  ],
+  "paths": {
+    "/api/v1/auth/register": {
+      "post": {
+        "summary": "Đăng ký tài khoản",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string", "example": "user@example.com" },
+                  "username": { "type": "string", "example": "phatnguyen" },
+                  "password": { "type": "string", "example": "123456" }
+                },
+                "required": ["email", "username", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Đăng ký thành công" },
+          "400": { "description": "Email đã được sử dụng" },
+          "500": { "description": "Lỗi server" }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "summary": "Đăng nhập hệ thống",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string", "example": "user@example.com" },
+                  "password": { "type": "string", "example": "123456" }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Đăng nhập thành công (trả về accessToken và refreshToken)"
+          },
+          "400": { "description": "Sai mật khẩu" },
+          "404": { "description": "Email không tồn tại" },
+          "500": { "description": "Lỗi server" }
+        }
+      }
+    },
+    "/api/v1/auth/refreshToken": {
+      "post": {
+        "summary": "Làm mới access token",
+        "tags": ["Auth"],
+        "description": "Dùng refreshToken để lấy accessToken mới. \n- Web: refreshToken thường lưu trong cookie (httpOnly). \n- Mobile app: refreshToken có thể được gửi trong body.",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "refreshToken": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Trả về accessToken mới",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "accessToken": {
+                      "type": "string",
+                      "example": "newAccessToken123456"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Không có refresh token (chưa đăng nhập)"
+          },
+          "403": {
+            "description": "Refresh token không hợp lệ hoặc đã hết hạn"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "summary": "Đăng xuất",
+        "tags": ["Auth"],
+        "description": "Xoá refresh token phía client",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Đăng xuất thành công"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

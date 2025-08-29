@@ -137,6 +137,196 @@
           }
         }
       }
+    },
+    "/api/v1/user/info": {
+      "get": {
+        "summary": "Lấy thông tin người dùng",
+        "tags": ["User"],
+        "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token).",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lấy thông tin user thành công",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Get info success",
+                  "data": {
+                    "_id": "64a1b23c45f6789012345678",
+                    "username": "example_user",
+                    "surName": "Example Surname",
+                    "birthday": "2000-01-01",
+                    "company": "Example Company"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Không tìm thấy user"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        }
+      }
+    },
+    "/api/v1/user/change": {
+      "put": {
+        "summary": "Cập nhật thông tin người dùng",
+        "tags": ["User"],
+        "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token).",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": { "type": "string" },
+                  "surName": { "type": "string" },
+                  "birthday": { "type": "string", "format": "date" },
+                  "company": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cập nhật user thành công",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "User info updated successfully",
+                  "data": {
+                    "_id": "64a1b23c45f6789012345678",
+                    "username": "new_username",
+                    "surName": "New Surname",
+                    "birthday": "2000-01-01",
+                    "company": "New Company"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Không tìm thấy user"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        }
+      }
+    },
+    "api/v1/products/all": {
+      "get": {
+        "summary": "Lấy tất cả sản phẩm",
+        "tags": ["Product"],
+        "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token).",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Danh sách sản phẩm",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Get products success",
+                  "data": [
+                    {
+                      "productName": "Laptop Dell XPS 13",
+                      "cost": "800",
+                      "price": "1000",
+                      "SKU": "DELLXPS13-001",
+                      "barcode": "1234567890001",
+                      "category": "Ultrabook",
+                      "RAM": "16GB",
+                      "date": "2023-09-01",
+                      "GPU": "Intel Iris Xe",
+                      "color": "Silver",
+                      "processor": "Intel Core i7-1165G7",
+                      "quantity": 78,
+                      "image": "https://res.cloudinary.com/djmeybzjk/image/upload/v1756458845/1_luwerf.png"
+                    },
+                    {
+                      "productName": "Laptop MacBook Air M2",
+                      "cost": "900",
+                      "price": "1200",
+                      "SKU": "MBAIR-M2-002",
+                      "barcode": "1234567890002",
+                      "category": "Ultrabook",
+                      "RAM": "8GB",
+                      "date": "2023-10-15",
+                      "GPU": "Apple M2 GPU",
+                      "color": "Space Gray",
+                      "processor": "Apple M2",
+                      "quantity": 95,
+                      "image": "https://res.cloudinary.com/djmeybzjk/image/upload/v1756458843/11_uek4xh.png"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": { "description": "Không có sản phẩm nào" },
+          "500": { "description": "Lỗi server" }
+        }
+      }
+    },
+    "api/v1/products/single/{productId}": {
+      "get": {
+        "summary": "Lấy thông tin chi tiết sản phẩm",
+        "tags": ["Product"],
+        "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token).",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "ID của sản phẩm"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Thông tin sản phẩm",
+            "content": {
+              "application/json": {
+                "example": {
+                  "productName": "Laptop Dell XPS 13",
+                  "cost": "800",
+                  "price": "1000",
+                  "SKU": "DELLXPS13-001",
+                  "barcode": "1234567890001",
+                  "category": "Ultrabook",
+                  "RAM": "16GB",
+                  "date": "2023-09-01",
+                  "GPU": "Intel Iris Xe",
+                  "color": "Silver",
+                  "processor": "Intel Core i7-1165G7",
+                  "quantity": 78,
+                  "image": "https://res.cloudinary.com/djmeybzjk/image/upload/v1756458845/1_luwerf.png"
+                }
+              }
+            }
+          },
+          "404": { "description": "Không tìm thấy sản phẩm" },
+          "500": { "description": "Lỗi server" }
+        }
+      }
     }
   },
   "components": {

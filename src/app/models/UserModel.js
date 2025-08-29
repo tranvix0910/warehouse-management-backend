@@ -10,21 +10,26 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    surName: {
+      type: String,
+      default: "-",
+    },
     password: {
       type: String,
       required: true,
     },
-    surName: {
-      type: String,
-    },
     birthday: {
       type: String,
+      default: "-",
     },
     company: {
       type: String,
+      default: "-",
     },
     avatar: {
       type: String,
+      default:
+        "https://res.cloudinary.com/djmeybzjk/image/upload/v1756449865/pngfind.com-placeholder-png-6104451_awuxxc.png",
     },
     teams: [
       {

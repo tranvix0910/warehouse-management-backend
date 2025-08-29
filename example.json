@@ -1,0 +1,71 @@
+{
+    "products": [
+        {
+            "name": "Acer Aspire Lite 14",
+            "image": "assets/images/1.png"
+        },
+        {
+            "name": "Lenovo Gaming LOQ",
+            "image": "assets/images/2.png"
+        },
+        {
+            "name": "Asus Vivobook Gaming",
+            "image": "assets/images/3.png"
+        },
+        {
+            "name": "MSI Modern 14",
+            "image": "assets/images/4.png"
+        },
+        {
+            "name": "Asus TUF Gaming F16",
+            "image": "assets/images/5.png"
+        },
+        
+        {
+            "name": "Macbook Air 13 M2 2024",
+            "image": "assets/images/6.png"
+        },
+        
+        {
+            "name": "Acer Nitro V Gaming",
+            "image": "assets/images/7.png"
+        },
+        
+        {
+            "name": "Lenovo Ideapad Slim 5",
+            "image": "assets/images/8.png"
+        },
+        
+        {
+            "name": "Lenovo ThinkPad E16",
+            "image": "assets/images/9.png"
+        },
+        
+        {
+            "name": "Acer Swift Lite 14 AI",
+            "image": "assets/images/10.png"
+        },
+        
+        {
+            "name": "MacBook Pro 14 M4",
+            "image": "assets/images/11.png"
+        },
+        
+        {
+            "name": "MacBook Air 15 inch M2 2023",
+            "image": "assets/images/12.png"
+        },
+        {
+            "name": "HP Gaming Victus 15",
+            "image": "assets/images/13.png"
+        },
+        {
+            "name": "HP Probook 445 G10",
+            "image": "assets/images/14.png"
+        },
+        {
+            "name": "HP OmniBook 5 AI",
+            "image": "assets/images/15.png"
+        }
+    ]
+}

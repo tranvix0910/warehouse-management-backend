@@ -5,6 +5,7 @@ const ProductSchema = new mongoose.Schema(
     productName: {
       type: String,
       required: true,
+      unique: true,
     },
     cost: {
       type: String,
@@ -24,10 +25,6 @@ const ProductSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-    },
-    productName: {
-      type: String,
-      required: true,
     },
     RAM: {
       type: String,

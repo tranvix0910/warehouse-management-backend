@@ -230,7 +230,7 @@
         }
       }
     },
-    "api/v1/products/all": {
+    "/api/v1/products/all": {
       "get": {
         "summary": "Lấy tất cả sản phẩm",
         "tags": ["Product"],
@@ -285,7 +285,7 @@
         }
       }
     },
-    "api/v1/products/single/{productId}": {
+    "/api/v1/products/single/{productId}": {
       "get": {
         "summary": "Lấy thông tin chi tiết sản phẩm",
         "tags": ["Product"],
@@ -325,6 +325,100 @@
           },
           "404": { "description": "Không tìm thấy sản phẩm" },
           "500": { "description": "Lỗi server" }
+        }
+      }
+    },
+    "/api/v1/products/create": {
+      "post": {
+        "summary": "Tạo sản phẩm mới",
+        "tags": ["Product"],
+        "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token). Sản phẩm có thể kèm ảnh (upload qua Cloudinary).",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Ảnh sản phẩm (upload file)"
+                  },
+                  "productName": {
+                    "type": "string",
+                    "example": "Laptop Dell XPS 13"
+                  },
+                  "SKU": { "type": "string", "example": "DELLXPS13-001" },
+                  "barcode": { "type": "string", "example": "1234567890001" },
+                  "category": { "type": "string", "example": "Ultrabook" },
+                  "quantity": { "type": "integer", "example": 50 },
+                  "cost": { "type": "number", "example": 800 },
+                  "price": { "type": "number", "example": 1000 },
+                  "RAM": { "type": "string", "example": "16GB" },
+                  "date": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2023-09-01"
+                  },
+                  "GPU": { "type": "string", "example": "Intel Iris Xe" },
+                  "color": { "type": "string", "example": "Silver" },
+                  "processor": {
+                    "type": "string",
+                    "example": "Intel Core i7-1165G7"
+                  }
+                },
+                "required": ["productName", "SKU", "price", "quantity"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Tạo sản phẩm thành công",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Product created successfully",
+                  "product": {
+                    "_id": "64a1b23c45f6789012345678",
+                    "image": "https://res.cloudinary.com/demo/image/upload/v1234567890/product.jpg",
+                    "productName": "Laptop Dell XPS 13",
+                    "SKU": "DELLXPS13-001",
+                    "barcode": "1234567890001",
+                    "category": "Ultrabook",
+                    "quantity": 50,
+                    "cost": 800,
+                    "price": 1000,
+                    "RAM": "16GB",
+                    "date": "2023-09-01",
+                    "GPU": "Intel Iris Xe",
+                    "color": "Silver",
+                    "processor": "Intel Core i7-1165G7",
+                    "createdBy": "64a1a11145f6789012345666"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Sản phẩm trùng SKU"
+          },
+          "401": {
+            "description": "Không có hoặc sai accessToken"
+          },
+          "404": {
+            "description": "Không tìm thấy user"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
         }
       }
     }

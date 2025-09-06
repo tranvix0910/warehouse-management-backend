@@ -47,3 +47,77 @@ export const getSingleProduct = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const createProduct = async (req, res) => {
+  const userId = req.user._id;
+  const {
+    productName,
+    SKU,
+    barcode,
+    category,
+    quantity,
+    cost,
+    price,
+    RAM,
+    date,
+    GPU,
+    color,
+    processor,
+  } = req.body;
+
+  try {
+    // ✅ Kiểm tra user
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // ✅ Kiểm tra trùng SKU
+    const existingProduct = await ProductModel.findOne({ SKU });
+    if (existingProduct) {
+      return res.status(400).json({
+        success: false,
+        message: "Product with this SKU already exists",
+      });
+    }
+
+    // ✅ Lấy URL ảnh từ Cloudinary (do Multer đã upload sẵn)
+    let imageUrl = null;
+    if (req.file) {
+      imageUrl = req.file.path; // Multer-Cloudinary trả về link
+    }
+
+    // ✅ Tạo sản phẩm mới
+    const newProduct = new ProductModel({
+      image: imageUrl,
+      productName,
+      SKU,
+      barcode,
+      category,
+      quantity,
+      cost,
+      price,
+      RAM,
+      date,
+      GPU,
+      color,
+      processor,
+      createdBy: userId,
+    });
+
+    await newProduct.save();
+
+    return res.status(201).json({
+      success: true,
+      message: "Product created successfully",
+      product: newProduct,
+    });
+  } catch (error) {
+    console.error("❌ Error creating product:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};

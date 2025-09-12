@@ -1,24 +1,18 @@
-import ProductModel from "../models/ProductModel.js";
-import UserModel from "../models/UserModel.js";
+import ProductModel from '../models/ProductModel.js';
+import UserModel from '../models/UserModel.js';
 
 export const getAllProducts = async (req, res) => {
   const userId = req.user._id;
   try {
     const user = await UserModel.findById(userId);
     if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
+      return res.status(404).json({ success: false, message: 'User not found' });
     }
     const products = await ProductModel.find();
     if (!products) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Products doesn't exist" });
+      return res.status(404).json({ success: false, message: "Products doesn't exist" });
     }
-    return res
-      .status(200)
-      .json({ success: true, message: "Get products success", data: products });
+    return res.status(200).json({ success: true, message: 'Get products success', data: products });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
@@ -30,19 +24,13 @@ export const getSingleProduct = async (req, res) => {
   try {
     const user = await UserModel.findById(userId);
     if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
+      return res.status(404).json({ success: false, message: 'User not found' });
     }
     const product = await ProductModel.findById(productId);
     if (!product) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Products doesn't exist" });
+      return res.status(404).json({ success: false, message: "Products doesn't exist" });
     }
-    return res
-      .status(200)
-      .json({ success: true, message: "Get products success", data: product });
+    return res.status(200).json({ success: true, message: 'Get products success', data: product });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
@@ -53,7 +41,6 @@ export const createProduct = async (req, res) => {
   const {
     productName,
     SKU,
-    barcode,
     category,
     quantity,
     cost,
@@ -69,7 +56,7 @@ export const createProduct = async (req, res) => {
     // ✅ Kiểm tra user
     const user = await UserModel.findById(userId);
     if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res.status(404).json({ success: false, message: 'User not found' });
     }
 
     // ✅ Kiểm tra trùng SKU
@@ -77,7 +64,7 @@ export const createProduct = async (req, res) => {
     if (existingProduct) {
       return res.status(400).json({
         success: false,
-        message: "Product with this SKU already exists",
+        message: 'Product with this SKU already exists',
       });
     }
 
@@ -92,7 +79,6 @@ export const createProduct = async (req, res) => {
       image: imageUrl,
       productName,
       SKU,
-      barcode,
       category,
       quantity,
       cost,
@@ -102,21 +88,20 @@ export const createProduct = async (req, res) => {
       GPU,
       color,
       processor,
-      createdBy: userId,
     });
 
     await newProduct.save();
 
     return res.status(201).json({
       success: true,
-      message: "Product created successfully",
+      message: 'Product created successfully',
       product: newProduct,
     });
   } catch (error) {
-    console.error("❌ Error creating product:", error);
+    console.error('❌ Error creating product:', error);
     return res.status(500).json({
       success: false,
-      message: "Server error",
+      message: 'Server error',
       error: error.message,
     });
   }

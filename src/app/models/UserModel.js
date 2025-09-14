@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const UserSchema = new mongoose.Schema(
   {
@@ -12,7 +12,7 @@ const UserSchema = new mongoose.Schema(
     },
     surName: {
       type: String,
-      default: "-",
+      default: '-',
     },
     password: {
       type: String,
@@ -20,26 +20,34 @@ const UserSchema = new mongoose.Schema(
     },
     birthday: {
       type: String,
-      default: "-",
+      default: '-',
     },
     company: {
       type: String,
-      default: "-",
+      default: '-',
     },
     avatar: {
       type: String,
       default:
-        "https://res.cloudinary.com/djmeybzjk/image/upload/v1756449865/pngfind.com-placeholder-png-6104451_awuxxc.png",
+        'https://res.cloudinary.com/djmeybzjk/image/upload/v1756449865/pngfind.com-placeholder-png-6104451_awuxxc.png',
     },
     teams: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "teams",
+        ref: 'teams',
       },
     ],
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
+    otp: {
+      code: String,
+      expiresAt: Date,
+    },
   },
   { timestamps: true }
 );
 
-const UserModel = mongoose.model("users", UserSchema);
+const UserModel = mongoose.model('users', UserSchema);
 export default UserModel;

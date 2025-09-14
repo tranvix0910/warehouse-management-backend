@@ -118,6 +118,156 @@
         }
       }
     },
+    "/api/v1/auth/verify-otp": {
+      "post": {
+        "summary": "Xác thực mã OTP",
+        "tags": ["Auth"],
+        "description": "Xác thực mã OTP 6 chữ số để verify email sau khi đăng ký",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "user@example.com",
+                    "description": "Email đã đăng ký"
+                  },
+                  "otp": {
+                    "type": "string",
+                    "example": "123456",
+                    "description": "Mã OTP 6 chữ số"
+                  }
+                },
+                "required": ["email", "otp"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Xác thực OTP thành công",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Email verified successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "OTP không hợp lệ, đã hết hạn hoặc email đã được verify",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "invalid_otp": {
+                    "summary": "OTP không đúng",
+                    "value": {
+                      "success": false,
+                      "message": "Invalid OTP code"
+                    }
+                  },
+                  "expired_otp": {
+                    "summary": "OTP đã hết hạn",
+                    "value": {
+                      "success": false,
+                      "message": "OTP has expired. Please request a new one."
+                    }
+                  },
+                  "already_verified": {
+                    "summary": "Email đã được verify",
+                    "value": {
+                      "success": false,
+                      "message": "Email already verified"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Không tìm thấy user",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "User not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/resend-otp": {
+      "post": {
+        "summary": "Gửi lại mã OTP",
+        "tags": ["Auth"],
+        "description": "Gửi lại mã OTP mới khi mã cũ hết hạn hoặc không nhận được",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "user@example.com",
+                    "description": "Email đã đăng ký nhưng chưa verify"
+                  }
+                },
+                "required": ["email"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Gửi lại OTP thành công",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "OTP sent successfully. Please check your email."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Email đã được verify hoặc không hợp lệ",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Email already verified"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Không tìm thấy user",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "User not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        }
+      }
+    },
     "/api/v1/auth/logout": {
       "post": {
         "summary": "Đăng xuất",

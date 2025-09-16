@@ -6,6 +6,8 @@ import {
   generateOTPEmailTemplate,
   generateWelcomeEmailTemplate,
 } from '../../services/EmailTemplates.js';
+import TempUserModel from '../models/TempUserModel.js';
+
 
 const generateAccessToken = (user) => {
   return jwt.sign({ _id: user._id }, process.env.JWT_ACCESSTOKEN_KEY, {
@@ -27,6 +29,7 @@ const generateOTP = () => {
 export const register = async (req, res) => {
   const { email, password, username } = req.body;
   try {
+    // Check if user already exists in main database
     const existingUser = await UserModel.findOne({ email });
     if (existingUser) {
       return res.status(400).json({
@@ -35,25 +38,29 @@ export const register = async (req, res) => {
       });
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(password, salt);
-
-    const newUser = new UserModel({
-      email,
-      username,
-      password: hash,
-    });
+    // Check if user already exists in temporary database
+    const existingTempUser = await TempUserModel.findOne({ email });
+    if (existingTempUser) {
+      // Delete existing temp user and create new one
+      await TempUserModel.deleteOne({ email });
+    }
 
     // Generate OTP
     const otpCode = generateOTP();
     const otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
-    newUser.otp = {
-      code: otpCode,
-      expiresAt: otpExpiresAt,
-    };
+    // Create temporary user in database
+    const tempUser = new TempUserModel({
+      email,
+      username,
+      password, // Store plain password temporarily
+      otp: {
+        code: otpCode,
+        expiresAt: otpExpiresAt,
+      },
+    });
 
-    await newUser.save();
+    await tempUser.save();
 
     // Send OTP email
     const emailHtml = generateOTPEmailTemplate(username, otpCode, false);
@@ -140,38 +147,47 @@ export const refreshToken = async (req, res) => {
 export const verifyOTP = async (req, res) => {
   const { email, otp } = req.body;
   try {
-    const user = await UserModel.findOne({ email });
-    if (!user) {
+    // Check if user exists in temporary database
+    const tempUser = await TempUserModel.findOne({ email });
+    if (!tempUser) {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    if (user.isEmailVerified) {
-      return res.status(400).json({ success: false, message: 'Email already verified' });
-    }
-
-    if (!user.otp || !user.otp.code || !user.otp.expiresAt) {
+    // Check if OTP exists and is valid
+    if (!tempUser.otp || !tempUser.otp.code || !tempUser.otp.expiresAt) {
       return res
         .status(400)
         .json({ success: false, message: 'No OTP found. Please request a new one.' });
     }
 
-    if (new Date() > user.otp.expiresAt) {
+    if (new Date() > tempUser.otp.expiresAt) {
       return res
         .status(400)
         .json({ success: false, message: 'OTP has expired. Please request a new one.' });
     }
 
-    if (user.otp.code !== otp) {
+    if (tempUser.otp.code !== otp) {
       return res.status(400).json({ success: false, message: 'Invalid OTP code' });
     }
 
-    // Verify email
-    user.isEmailVerified = true;
-    user.otp = undefined;
-    await user.save();
+    // Hash password and create user in main database
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(tempUser.password, salt);
+
+    const newUser = new UserModel({
+      email: tempUser.email,
+      username: tempUser.username,
+      password: hash,
+      isEmailVerified: true,
+    });
+
+    await newUser.save();
+
+    // Remove from temporary database
+    await TempUserModel.deleteOne({ email });
 
     // Send welcome email
-    const welcomeHtml = generateWelcomeEmailTemplate(user.username);
+    const welcomeHtml = generateWelcomeEmailTemplate(tempUser.username);
     sendMail(email, 'Welcome to Nagav Inventory!', welcomeHtml);
 
     return res.status(200).json({
@@ -187,28 +203,26 @@ export const verifyOTP = async (req, res) => {
 export const resendOTP = async (req, res) => {
   const { email } = req.body;
   try {
-    const user = await UserModel.findOne({ email });
-    if (!user) {
+    // Check if user exists in temporary database
+    const tempUser = await TempUserModel.findOne({ email });
+    if (!tempUser) {
       return res.status(404).json({ success: false, message: 'User not found' });
-    }
-
-    if (user.isEmailVerified) {
-      return res.status(400).json({ success: false, message: 'Email already verified' });
     }
 
     // Generate new OTP
     const otpCode = generateOTP();
     const otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
-    user.otp = {
+    // Update OTP in temporary database
+    tempUser.otp = {
       code: otpCode,
       expiresAt: otpExpiresAt,
     };
 
-    await user.save();
+    await tempUser.save();
 
     // Send OTP email
-    const emailHtml = generateOTPEmailTemplate(user.username, otpCode, true);
+    const emailHtml = generateOTPEmailTemplate(tempUser.username, otpCode, true);
     sendMail(email, 'New Verification Code - Nagav Inventory', emailHtml);
 
     return res.status(200).json({

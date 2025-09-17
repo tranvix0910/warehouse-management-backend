@@ -571,8 +571,147 @@
           }
         }
       }
+    },
+    "/api/v1/transactions": {
+      "get": {
+        "summary": "Lấy danh sách giao dịch (transactions)",
+        "tags": ["Transaction"],
+        "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token). Trả về danh sách giao dịch, đã populate chi tiết sản phẩm trong items.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Danh sách transactions",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Get transactions successfully",
+                  "data": [
+                    {
+                      "_id": "66f3a1b2c3d4e5f6a7b8c9d0",
+                      "type": "stock_in",
+                      "quantity": 7,
+                      "items": [
+                        {
+                          "product": {
+                            "_id": "66f3a1b2c3d4e5f6a7b8c111",
+                            "productName": "Laptop Dell XPS 13",
+                            "SKU": "DELLXPS13-001",
+                            "price": "1000",
+                            "quantity": 78,
+                            "image": "https://res.cloudinary.com/demo/image/upload/v123/product.jpg",
+                            "category": "Ultrabook"
+                          },
+                          "quantity": 5
+                        },
+                        {
+                          "product": {
+                            "_id": "66f3a1b2c3d4e5f6a7b8c112",
+                            "productName": "MacBook Air M2",
+                            "SKU": "MBAIR-M2-002",
+                            "price": "1200",
+                            "quantity": 95,
+                            "image": "https://res.cloudinary.com/demo/image/upload/v123/product2.jpg",
+                            "category": "Ultrabook"
+                          },
+                          "quantity": 2
+                        }
+                      ],
+                      "supplier": "Acer Corporation",
+                      "customer": null,
+                      "note": "Nhập hàng đợt 1",
+                      "date": "2025-09-17T10:00:00.000Z",
+                      "createdAt": "2025-09-17T10:00:05.000Z",
+                      "updatedAt": "2025-09-17T10:00:05.000Z"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": { "description": "Không có hoặc sai accessToken" },
+          "500": { "description": "Lỗi server" }
+        }
+      }
+    },
+    "/api/v1/transactions/create": {
+      "post": {
+        "summary": "Tạo giao dịch mới",
+        "tags": ["Transaction"],
+        "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token). Cập nhật tồn kho theo type và lưu transaction.",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": ["stock_in", "stock_out"],
+                    "example": "stock_in"
+                  },
+                  "supplier": { "type": "string", "example": "Acer Corporation" },
+                  "customer": { "type": "string", "example": "John Carter" },
+                  "note": { "type": "string", "example": "Nhập hàng đợt 1" },
+                  "date": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-09-17T10:00:00.000Z"
+                  },
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "product": { "type": "string", "example": "66f3a1b2c3d4e5f6a7b8c111" },
+                        "quantity": { "type": "integer", "example": 5 }
+                      },
+                      "required": ["product", "quantity"]
+                    }
+                  }
+                },
+                "required": ["type", "items"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Tạo transaction thành công",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Transaction created successfully",
+                  "data": {
+                    "_id": "66f3a1b2c3d4e5f6a7b8c9d0",
+                    "type": "stock_out",
+                    "quantity": 3,
+                    "items": [
+                      { "product": "66f3a1b2c3d4e5f6a7b8c111", "quantity": 1 },
+                      { "product": "66f3a1b2c3d4e5f6a7b8c112", "quantity": 2 }
+                    ],
+                    "supplier": null,
+                    "customer": "Sarah Williams",
+                    "note": "Xuất hàng cho khách",
+                    "date": "2025-09-17T10:30:00.000Z",
+                    "createdAt": "2025-09-17T10:30:05.000Z",
+                    "updatedAt": "2025-09-17T10:30:05.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Payload không hợp lệ hoặc thiếu hàng khi stock_out" },
+          "401": { "description": "Không có hoặc sai accessToken" },
+          "404": { "description": "Không tìm thấy user hoặc product" },
+          "500": { "description": "Lỗi server" }
+        }
+      }
     }
-  },  
+  },
   "components": {
     "securitySchemes": {
       "bearerAuth": {

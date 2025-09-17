@@ -12,6 +12,7 @@ import swaggerDocument from "./document/swagger.json" with { type: "json" } ;
 import authRoutes from "./routes/auth.js";
 import userRoutes from './routes/user.js'
 import productRoutes from './routes/product.js'
+import transactionRoutes from './routes/transaction.js'
 
 dotenv.config();
 
@@ -44,6 +45,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/users",userRoutes)
 app.use("/api/v1/products",productRoutes)
+app.use("/api/v1/transactions",transactionRoutes)
 
 app.listen(port, () => {
   connectDB();

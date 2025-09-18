@@ -710,6 +710,197 @@
           "500": { "description": "Lỗi server" }
         }
       }
+    },
+    "/api/v1/suppliers": {
+      "get": {
+        "summary": "Lấy danh sách nhà cung cấp",
+        "tags": ["Supplier"],
+        "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token). Trả về danh sách nhà cung cấp, sắp xếp yêu thích trước và theo tên tăng dần.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Danh sách nhà cung cấp",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Get suppliers success",
+                  "data": [
+                    {
+                      "_id": "66f3a1b2c3d4e5f6a7b8c111",
+                      "name": "Acer Corporation",
+                      "email": "contact@acer.com",
+                      "address": "157-1, Baoqiao Rd, Xizhi District, New Taipei City",
+                      "notes": "Ưu tiên",
+                      "phone": 123456789,
+                      "isFavorite": true,
+                      "createdAt": "2025-09-17T10:00:05.000Z",
+                      "updatedAt": "2025-09-17T10:00:05.000Z"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": { "description": "Không có hoặc sai accessToken" },
+          "404": { "description": "Không tìm thấy user" },
+          "500": { "description": "Lỗi server" }
+        }
+      },
+      "post": {
+        "summary": "Tạo nhà cung cấp mới",
+        "tags": ["Supplier"],
+        "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token).",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string", "example": "Acer Corporation" },
+                  "email": { "type": "string", "example": "contact@acer.com" },
+                  "address": {
+                    "type": "string",
+                    "example": "157-1, Baoqiao Rd, Xizhi District, New Taipei City"
+                  },
+                  "notes": { "type": "string", "example": "Ưu tiên thanh toán 30 ngày" },
+                  "phone": { "type": "integer", "example": 123456789 }
+                },
+                "required": ["name", "email", "address", "phone"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Tạo nhà cung cấp thành công",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Supplier created successfully",
+                  "data": {
+                    "_id": "66f3a1b2c3d4e5f6a7b8c222",
+                    "name": "Acer Corporation",
+                    "email": "contact@acer.com",
+                    "address": "157-1, Baoqiao Rd, Xizhi District, New Taipei City",
+                    "notes": "Ưu tiên thanh toán 30 ngày",
+                    "phone": 123456789,
+                    "isFavorite": false,
+                    "createdAt": "2025-09-17T10:00:05.000Z",
+                    "updatedAt": "2025-09-17T10:00:05.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Không có hoặc sai accessToken" },
+          "404": { "description": "Không tìm thấy user" },
+          "500": { "description": "Lỗi server" }
+        }
+      }
+    },
+    "/api/v1/suppliers/{id}": {
+      "put": {
+        "summary": "Cập nhật thông tin nhà cung cấp",
+        "tags": ["Supplier"],
+        "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token).",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "ID nhà cung cấp"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "email": { "type": "string" },
+                  "address": { "type": "string" },
+                  "notes": { "type": "string" },
+                  "phone": { "type": "integer" },
+                  "isFavorite": { "type": "boolean" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Cập nhật thành công" },
+          "401": { "description": "Không có hoặc sai accessToken" },
+          "404": { "description": "Không tìm thấy user hoặc supplier" },
+          "500": { "description": "Lỗi server" }
+        }
+      },
+      "delete": {
+        "summary": "Xoá nhà cung cấp",
+        "tags": ["Supplier"],
+        "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token).",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "ID nhà cung cấp"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Xoá thành công" },
+          "401": { "description": "Không có hoặc sai accessToken" },
+          "404": { "description": "Không tìm thấy user hoặc supplier" },
+          "500": { "description": "Lỗi server" }
+        }
+      }
+    },
+    "/api/v1/suppliers/favorite/{id}": {
+      "put": {
+        "summary": "Chuyển trạng thái yêu thích nhà cung cấp",
+        "tags": ["Supplier"],
+        "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token).",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "ID nhà cung cấp"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Toggle favorite supplier success",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Toggle favorite supplier success",
+                  "data": {
+                    "_id": "66f3a1b2c3d4e5f6a7b8c111",
+                    "name": "Acer Corporation",
+                    "isFavorite": true
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Không có hoặc sai accessToken" },
+          "404": { "description": "Không tìm thấy user hoặc supplier" },
+          "500": { "description": "Lỗi server" }
+        }
+      }
     }
   },
   "components": {

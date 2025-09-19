@@ -1,0 +1,41 @@
+[
+  {
+    "name": "Acer Supplier",
+    "email": "contact@acer-supplier.com",
+    "address": "123 Nguyen Trai, Ha Noi, Vietnam",
+    "notes": "Chuyên cung cấp laptop Acer",
+    "phone": 84901234567,
+    "isFavorite": true
+  },
+  {
+    "name": "MSI Distributor",
+    "email": "support@msi-distributor.com",
+    "address": "45 Vo Thi Sau, Ho Chi Minh City, Vietnam",
+    "notes": "Cung cấp gaming gear và PC MSI",
+    "phone": 84987654321,
+    "isFavorite": false
+  },
+  {
+    "name": "Dell Technologies",
+    "email": "sales@delltech.com",
+    "address": "678 Le Loi, Da Nang, Vietnam",
+    "phone": 84983456789,
+    "isFavorite": true
+  },
+  {
+    "name": "HP Partner",
+    "email": "info@hp-partner.com",
+    "address": "12 Tran Hung Dao, Hue, Vietnam",
+    "notes": "Cung cấp máy in, laptop HP",
+    "phone": 84976543210,
+    "isFavorite": false
+  },
+  {
+    "name": "Lenovo Supplier",
+    "email": "contact@lenovo-supplier.com",
+    "address": "90 Le Lai, Can Tho, Vietnam",
+    "notes": "Nhà phân phối chính thức Lenovo",
+    "phone": 84992345678,
+    "isFavorite": true
+  }
+]

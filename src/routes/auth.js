@@ -9,10 +9,11 @@ import {
   resendOTP,
 } from '../app/controllers/AuthControllers.js';
 import { verifyToken } from '../middlewares/verify.js';
+import { validatePassword } from '../middlewares/validatePassword.js';
 
 const router = express.Router();
 
-router.post('/register', register);
+router.post('/register', validatePassword, register);
 router.post('/login', login);
 router.post('/refreshToken', refreshToken);
 router.post('/logout', verifyToken, logout);

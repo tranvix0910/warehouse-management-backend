@@ -711,6 +711,132 @@
         }
       }
     },
+    "/api/v1/customers": {
+      "get": {
+        "summary": "Lấy danh sách khách hàng",
+        "tags": ["Customer"],
+        "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token). Trả về danh sách khách hàng, sắp xếp yêu thích trước và theo tên tăng dần.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Danh sách khách hàng",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Get customers success",
+                  "data": [
+                    {
+                      "_id": "66f3a1b2c3d4e5f6a7b8c311",
+                      "name": "John Carter",
+                      "email": "john.carter@example.com",
+                      "address": "123 Main St, New York, USA",
+                      "notes": "Khách VIP",
+                      "phone": 84987654321,
+                      "isFavorite": true,
+                      "createdAt": "2025-09-17T10:00:05.000Z",
+                      "updatedAt": "2025-09-17T10:00:05.000Z"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": { "description": "Không có hoặc sai accessToken" },
+          "404": { "description": "Không tìm thấy user" },
+          "500": { "description": "Lỗi server" }
+        }
+      },
+      "post": {
+        "summary": "Tạo khách hàng mới",
+        "tags": ["Customer"],
+        "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token).",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string", "example": "John Carter" },
+                  "email": { "type": "string", "example": "john.carter@example.com" },
+                  "address": { "type": "string", "example": "123 Main St, New York, USA" },
+                  "notes": { "type": "string", "example": "Khách VIP" },
+                  "phone": { "type": "integer", "example": 84987654321 }
+                },
+                "required": ["name", "email", "address", "phone"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Tạo khách hàng thành công",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Customer created successfully",
+                  "data": {
+                    "_id": "66f3a1b2c3d4e5f6a7b8c322",
+                    "name": "John Carter",
+                    "email": "john.carter@example.com",
+                    "address": "123 Main St, New York, USA",
+                    "notes": "Khách VIP",
+                    "phone": 84987654321,
+                    "isFavorite": false,
+                    "createdAt": "2025-09-17T10:00:05.000Z",
+                    "updatedAt": "2025-09-17T10:00:05.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Không có hoặc sai accessToken" },
+          "404": { "description": "Không tìm thấy user" },
+          "500": { "description": "Lỗi server" }
+        }
+      }
+    },
+    "/api/v1/customers/favorite/{id}": {
+      "put": {
+        "summary": "Chuyển trạng thái yêu thích khách hàng",
+        "tags": ["Customer"],
+        "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token).",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "ID khách hàng"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Toggle favorite customer success",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Toggle favorite customer success",
+                  "data": {
+                    "_id": "66f3a1b2c3d4e5f6a7b8c311",
+                    "name": "John Carter",
+                    "isFavorite": true
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Không có hoặc sai accessToken" },
+          "404": { "description": "Không tìm thấy user hoặc customer" },
+          "500": { "description": "Lỗi server" }
+        }
+      }
+    },
     "/api/v1/suppliers": {
       "get": {
         "summary": "Lấy danh sách nhà cung cấp",

@@ -116,3 +116,177 @@ export const getAllTransaction = async (req, res) => {
     });
   }
 };
+
+export const deleteTransaction = async (req, res) => {
+  const userId = req.user._id;
+  const { transactionId } = req.params;
+
+  try {
+    // 1) Validate user
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // 2) Find transaction with populated items
+    const transaction = await TransactionModel.findById(transactionId).populate('items.product');
+
+    if (!transaction) {
+      return res.status(404).json({ success: false, message: 'Transaction not found' });
+    }
+
+    // 3) Reverse stock changes
+    for (const item of transaction.items) {
+      const product = item.product;
+      const qty = item.quantity;
+
+      if (transaction.type === 'stock_in') {
+        // Reverse stock_in: subtract the quantity
+        if (product.quantity < qty) {
+          return res.status(400).json({
+            success: false,
+            message: `Cannot delete transaction: insufficient stock for product ${product.productName}`,
+          });
+        }
+        product.quantity -= qty;
+      } else {
+        // Reverse stock_out: add back the quantity
+        product.quantity += qty;
+      }
+      await product.save();
+    }
+
+    // 4) Delete transaction
+    await TransactionModel.findByIdAndDelete(transactionId);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Transaction deleted successfully',
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const updateTransaction = async (req, res) => {
+  const userId = req.user._id;
+  const { transactionId } = req.params;
+  const { date, type, supplier, customer, note, items } = req.body;
+
+  try {
+    // 1) Validate user
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // 2) Find existing transaction with populated items
+    const existingTransaction = await TransactionModel.findById(transactionId).populate(
+      'items.product'
+    );
+
+    if (!existingTransaction) {
+      return res.status(404).json({ success: false, message: 'Transaction not found' });
+    }
+
+    // 3) Validate new payload
+    if (type && !['stock_in', 'stock_out'].includes(type)) {
+      return res.status(400).json({ success: false, message: 'Invalid transaction type' });
+    }
+
+    if (items && (!Array.isArray(items) || items.length === 0)) {
+      return res.status(400).json({ success: false, message: 'Items are required' });
+    }
+
+    // 4) Reverse existing stock changes first
+    for (const item of existingTransaction.items) {
+      const product = item.product;
+      const qty = item.quantity;
+
+      if (existingTransaction.type === 'stock_in') {
+        // Reverse stock_in: subtract the quantity
+        if (product.quantity < qty) {
+          return res.status(400).json({
+            success: false,
+            message: `Cannot update transaction: insufficient stock for product ${product.productName}`,
+          });
+        }
+        product.quantity -= qty;
+      } else {
+        // Reverse stock_out: add back the quantity
+        product.quantity += qty;
+      }
+      await product.save();
+    }
+
+    // 5) Apply new stock changes if items are provided
+    let newTotalQuantity = 0;
+    const productUpdates = [];
+
+    if (items) {
+      for (const item of items) {
+        const productId = item.product;
+        const qty = Number(item.quantity);
+
+        if (!productId || !qty || qty <= 0 || !Number.isFinite(qty)) {
+          return res.status(400).json({ success: false, message: 'Invalid item payload' });
+        }
+
+        const product = await ProductModel.findById(productId);
+        if (!product) {
+          return res.status(404).json({ success: false, message: 'Product not found' });
+        }
+
+        const newType = type || existingTransaction.type;
+        if (newType === 'stock_out' && product.quantity < qty) {
+          return res.status(400).json({
+            success: false,
+            message: `Insufficient stock for product ${product.productName}`,
+          });
+        }
+
+        productUpdates.push({ product, qty });
+        newTotalQuantity += qty;
+      }
+
+      // Apply new stock updates
+      for (const { product, qty } of productUpdates) {
+        const newType = type || existingTransaction.type;
+        if (newType === 'stock_in') {
+          product.quantity += qty;
+        } else {
+          product.quantity -= qty;
+        }
+        await product.save();
+      }
+    }
+
+    // 6) Update transaction record
+    const updateData = {};
+    if (type !== undefined) updateData.type = type;
+    if (date !== undefined) updateData.date = new Date(date);
+    if (supplier !== undefined) updateData.supplier = supplier;
+    if (customer !== undefined) updateData.customer = customer;
+    if (note !== undefined) updateData.note = note;
+    if (items !== undefined) {
+      updateData.items = items.map((it) => ({
+        product: it.product,
+        quantity: Number(it.quantity),
+      }));
+      updateData.quantity = newTotalQuantity;
+    }
+
+    const updatedTransaction = await TransactionModel.findByIdAndUpdate(transactionId, updateData, {
+      new: true,
+      runValidators: true,
+    }).populate('items.product');
+
+    return res.status(200).json({
+      success: true,
+      message: 'Transaction updated successfully',
+      data: updatedTransaction,
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};

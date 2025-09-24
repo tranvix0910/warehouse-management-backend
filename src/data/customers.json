@@ -1,0 +1,82 @@
+[
+  {
+    "name": "Nguyen Van A",
+    "email": "nguyenvana@example.com",
+    "address": "12 Nguyen Trai, Ha Noi, Vietnam",
+    "phone": 84901234567,
+    "notes": "Khách hàng thân thiết",
+    "isFavorite": true
+  },
+  {
+    "name": "Tran Thi B",
+    "email": "tranthib@example.com",
+    "address": "34 Le Loi, Ho Chi Minh City, Vietnam",
+    "phone": 84987654321,
+    "notes": "Mua hàng định kỳ mỗi tháng",
+    "isFavorite": false
+  },
+  {
+    "name": "Le Van C",
+    "email": "levanc@example.com",
+    "address": "56 Vo Thi Sau, Da Nang, Vietnam",
+    "phone": 84983456789,
+    "notes": "Ưu tiên giao nhanh",
+    "isFavorite": true
+  },
+  {
+    "name": "Pham Thi D",
+    "email": "phamthid@example.com",
+    "address": "78 Hai Ba Trung, Hue, Vietnam",
+    "phone": 84976543210,
+    "notes": "Yêu cầu hóa đơn đỏ",
+    "isFavorite": false
+  },
+  {
+    "name": "Hoang Van E",
+    "email": "hoangvane@example.com",
+    "address": "90 Tran Hung Dao, Can Tho, Vietnam",
+    "phone": 84992345678,
+    "notes": "Khách VIP, giảm giá 5%",
+    "isFavorite": true
+  },
+  {
+    "name": "Nguyen Thi F",
+    "email": "nguyenthif@example.com",
+    "address": "21 Phan Chu Trinh, Ha Noi, Vietnam",
+    "phone": 84981234567,
+    "notes": "",
+    "isFavorite": false
+  },
+  {
+    "name": "Bui Van G",
+    "email": "buivang@example.com",
+    "address": "43 Dien Bien Phu, Ho Chi Minh City, Vietnam",
+    "phone": 84973456789,
+    "notes": "Hay mua số lượng lớn",
+    "isFavorite": true
+  },
+  {
+    "name": "Do Thi H",
+    "email": "dothih@example.com",
+    "address": "65 Nguyen Hue, Da Nang, Vietnam",
+    "phone": 84962345678,
+    "notes": "",
+    "isFavorite": false
+  },
+  {
+    "name": "Vo Van I",
+    "email": "vovani@example.com",
+    "address": "87 Ly Thuong Kiet, Hue, Vietnam",
+    "phone": 84951234567,
+    "notes": "Chỉ giao hàng vào buổi sáng",
+    "isFavorite": false
+  },
+  {
+    "name": "Phan Thi J",
+    "email": "phanthij@example.com",
+    "address": "11 Le Lai, Hai Phong, Vietnam",
+    "phone": 84944567891,
+    "notes": "Thanh toán chuyển khoản",
+    "isFavorite": true
+  }
+]

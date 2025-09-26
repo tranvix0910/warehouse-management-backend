@@ -128,7 +128,7 @@ export const getAllTransaction = async (req, res) => {
 
 export const deleteTransaction = async (req, res) => {
   const userId = req.user._id;
-  const  transactionId = req.params.id;
+  const transactionId = req.params.id;
 
   try {
     // 1) Validate user
@@ -179,7 +179,7 @@ export const deleteTransaction = async (req, res) => {
 
 export const updateTransaction = async (req, res) => {
   const userId = req.user._id;
-  const transactionId  = req.params.id;
+  const transactionId = req.params.id;
   const { date, supplier, customer, note, items } = req.body; // ignore type changes from body
 
   try {

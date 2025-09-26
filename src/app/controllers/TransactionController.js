@@ -1,6 +1,8 @@
 import TransactionModel from '../models/TransactionModel.js';
 import UserModel from '../models/UserModel.js';
 import ProductModel from '../models/ProductModel.js';
+import SupplierModel from '../models/SupplierModel.js';
+import CustomerModel from '../models/CustomerModel.js';
 
 export const createTransaction = async (req, res) => {
   const userId = req.user._id;
@@ -20,6 +22,13 @@ export const createTransaction = async (req, res) => {
 
     if (!Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ success: false, message: 'Items are required' });
+    }
+
+    const existingCustomer = await CustomerModel.find({ name: customer });
+    const existingSupplier = await SupplierModel.find({ name: supplier });
+
+    if (!existingCustomer || !existingSupplier) {
+      return res.status(404).json({ success: false, message: 'Customer or Supplier not found' });
     }
 
     // 3) Validate items and compute total quantity
@@ -119,7 +128,7 @@ export const getAllTransaction = async (req, res) => {
 
 export const deleteTransaction = async (req, res) => {
   const userId = req.user._id;
-  const { transactionId } = req.params;
+  const  transactionId = req.params.id;
 
   try {
     // 1) Validate user
@@ -170,8 +179,8 @@ export const deleteTransaction = async (req, res) => {
 
 export const updateTransaction = async (req, res) => {
   const userId = req.user._id;
-  const { transactionId } = req.params;
-  const { date, type, supplier, customer, note, items } = req.body;
+  const transactionId  = req.params.id;
+  const { date, supplier, customer, note, items } = req.body; // ignore type changes from body
 
   try {
     // 1) Validate user
@@ -188,11 +197,14 @@ export const updateTransaction = async (req, res) => {
     if (!existingTransaction) {
       return res.status(404).json({ success: false, message: 'Transaction not found' });
     }
+    const existingCustomer = await CustomerModel.find({ name: customer });
+    const existingSupplier = await SupplierModel.find({ name: supplier });
 
-    // 3) Validate new payload
-    if (type && !['stock_in', 'stock_out'].includes(type)) {
-      return res.status(400).json({ success: false, message: 'Invalid transaction type' });
+    if (!existingCustomer || !existingSupplier) {
+      return res.status(404).json({ success: false, message: 'Customer or Supplier not found' });
     }
+
+    // 3) Validate new payload (do not allow changing transaction type)
 
     if (items && (!Array.isArray(items) || items.length === 0)) {
       return res.status(400).json({ success: false, message: 'Items are required' });
@@ -237,7 +249,7 @@ export const updateTransaction = async (req, res) => {
           return res.status(404).json({ success: false, message: 'Product not found' });
         }
 
-        const newType = type || existingTransaction.type;
+        const newType = existingTransaction.type;
         if (newType === 'stock_out' && product.quantity < qty) {
           return res.status(400).json({
             success: false,
@@ -251,7 +263,7 @@ export const updateTransaction = async (req, res) => {
 
       // Apply new stock updates
       for (const { product, qty } of productUpdates) {
-        const newType = type || existingTransaction.type;
+        const newType = existingTransaction.type;
         if (newType === 'stock_in') {
           product.quantity += qty;
         } else {
@@ -263,7 +275,6 @@ export const updateTransaction = async (req, res) => {
 
     // 6) Update transaction record
     const updateData = {};
-    if (type !== undefined) updateData.type = type;
     if (date !== undefined) updateData.date = new Date(date);
     if (supplier !== undefined) updateData.supplier = supplier;
     if (customer !== undefined) updateData.customer = customer;

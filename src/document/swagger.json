@@ -1027,6 +1027,141 @@
           "500": { "description": "Lỗi server" }
         }
       }
+    },
+    "/api/v1/reports/summary": {
+      "get": {
+        "summary": "Lấy tổng quan báo cáo kho",
+        "tags": ["Report"],
+        "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token). Trả về thống kê tổng quan về tình trạng kho hàng.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Thống kê tổng quan kho hàng",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Get stock summary successfully",
+                  "data": {
+                    "lowStock": 5,
+                    "oldStock": 12,
+                    "outOfStock": 3,
+                    "totalProduct": 150
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Không có hoặc sai accessToken" },
+          "404": { "description": "Không tìm thấy user" },
+          "500": { "description": "Lỗi server" }
+        }
+      }
+    },
+    "/api/v1/reports/old-stock": {
+      "get": {
+        "summary": "Lấy danh sách hàng tồn kho cũ",
+        "tags": ["Report"],
+        "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token). Trả về danh sách sản phẩm không được nhập kho trong 30 ngày gần đây.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Danh sách hàng tồn kho cũ",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Get old stock successfully",
+                  "data": [
+                    {
+                      "_id": "66f3a1b2c3d4e5f6a7b8c111",
+                      "productName": "Laptop Dell XPS 13",
+                      "SKU": "DELLXPS13-001",
+                      "quantity": 25,
+                      "price": "1000",
+                      "category": "Ultrabook",
+                      "daysSinceLastStockIn": 45
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": { "description": "Không có hoặc sai accessToken" },
+          "404": { "description": "Không tìm thấy user" },
+          "500": { "description": "Lỗi server" }
+        }
+      }
+    },
+    "/api/v1/reports/out-of-stock": {
+      "get": {
+        "summary": "Lấy danh sách sản phẩm hết hàng",
+        "tags": ["Report"],
+        "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token). Trả về danh sách sản phẩm có số lượng bằng 0.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Danh sách sản phẩm hết hàng",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Get out of stock successfully",
+                  "data": [
+                    {
+                      "_id": "66f3a1b2c3d4e5f6a7b8c222",
+                      "productName": "MacBook Pro M3",
+                      "SKU": "MBPRO-M3-001",
+                      "quantity": 0,
+                      "price": "2500",
+                      "category": "Laptop",
+                      "image": "https://res.cloudinary.com/demo/image/upload/v123/macbook.jpg"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": { "description": "Không có hoặc sai accessToken" },
+          "404": { "description": "Không tìm thấy user" },
+          "500": { "description": "Lỗi server" }
+        }
+      }
+    },
+    "/api/v1/reports/low-stock": {
+      "get": {
+        "summary": "Lấy danh sách sản phẩm sắp hết hàng",
+        "tags": ["Report"],
+        "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token). Trả về danh sách sản phẩm có số lượng từ 1-9 (sắp hết hàng).",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Danh sách sản phẩm sắp hết hàng",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Get low stock successfully",
+                  "data": [
+                    {
+                      "_id": "66f3a1b2c3d4e5f6a7b8c333",
+                      "productName": "iPad Air M2",
+                      "SKU": "IPAD-AIR-M2-001",
+                      "quantity": 7,
+                      "price": "800",
+                      "category": "Tablet",
+                      "image": "https://res.cloudinary.com/demo/image/upload/v123/ipad.jpg"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": { "description": "Không có hoặc sai accessToken" },
+          "404": { "description": "Không tìm thấy user" },
+          "500": { "description": "Lỗi server" }
+        }
+      }
     }
   },
   "components": {

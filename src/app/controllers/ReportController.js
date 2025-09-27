@@ -58,43 +58,39 @@ export const getOldStock = async (req, res) => {
     // 1) Validate user
     const user = await UserModel.findById(userId);
     if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found' });
+      return res.status(404).json({ success: false, message: "User not found" });
     }
 
-    // 2) Lấy danh sách giao dịch nhập kho trong 30 ngày gần đây
+    // 2) Lấy mốc 30 ngày trước
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    const recentStockIn = await TransactionModel.find({
-      type: 'stock_in',
-      date: { $gte: thirtyDaysAgo },
-    }).select('items.product');
+    // 3) Lấy tất cả sản phẩm còn tồn kho
+    const products = await ProductModel.find({ quantity: { $gt: 0 } });
 
-    const recentProductIds = new Set();
-    recentStockIn.forEach((tx) =>
-      tx.items.forEach((item) => recentProductIds.add(item.product.toString()))
-    );
-
-    // 3) Lấy danh sách sản phẩm cũ (không nằm trong recentProductIds)
-    const oldStockProducts = await ProductModel.find({
-      _id: { $nin: Array.from(recentProductIds) },
-      quantity: { $gt: 0 },
-    });
-
-    // 4) Tính số ngày chưa nhập kho cho từng sản phẩm
     const result = [];
-    for (const product of oldStockProducts) {
-      // Lấy giao dịch nhập kho gần nhất của sản phẩm này
+    for (const product of products) {
+      // Tìm lần stock_in gần nhất
       const lastStockIn = await TransactionModel.findOne({
-        type: 'stock_in',
-        'items.product': product._id,
+        type: "stock_in",
+        "items.product": product._id,
       })
-        .sort({ date: -1 }) // lấy giao dịch mới nhất
-        .select('date');
+        .sort({ date: -1 })
+        .select("date");
 
-      let daysSinceLastStockIn = null;
+      if (lastStockIn && lastStockIn.date >= thirtyDaysAgo) {
+        // Nếu có nhập kho trong 30 ngày gần nhất => bỏ qua
+        continue;
+      }
+
+      let daysSinceLastStockIn;
       if (lastStockIn) {
+        // Nếu có nhập kho nhưng > 30 ngày trước => tính từ ngày nhập cuối
         const diffMs = Date.now() - new Date(lastStockIn.date).getTime();
+        daysSinceLastStockIn = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      } else {
+        // Nếu chưa từng nhập kho => tính từ ngày tạo sản phẩm
+        const diffMs = Date.now() - new Date(product.date).getTime();
         daysSinceLastStockIn = Math.floor(diffMs / (1000 * 60 * 60 * 24));
       }
 
@@ -106,7 +102,7 @@ export const getOldStock = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: 'Get old stock successfully',
+      message: "Get old stock successfully",
       data: result,
     });
   } catch (error) {
@@ -135,7 +131,7 @@ export const getOutOfStock = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
-
+  
 export const getLowStock = async (req, res) => {
   const userId = req.user._id;
   try {
@@ -158,4 +154,4 @@ export const getLowStock = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
-};
+}; 

@@ -711,6 +711,118 @@
         }
       }
     },
+    "/api/v1/transactions/{id}": {
+      "put": {
+        "summary": "Cập nhật giao dịch",
+        "tags": ["Transaction"],
+        "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token). Cập nhật thông tin giao dịch và điều chỉnh tồn kho tương ứng.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "ID của giao dịch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "supplier": { "type": "string", "example": "Acer Corporation" },
+                  "customer": { "type": "string", "example": "John Carter" },
+                  "note": { "type": "string", "example": "Cập nhật ghi chú giao dịch" },
+                  "date": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-09-17T10:00:00.000Z"
+                  },
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "product": { "type": "string", "example": "66f3a1b2c3d4e5f6a7b8c111" },
+                        "quantity": { "type": "integer", "example": 5 }
+                      },
+                      "required": ["product", "quantity"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cập nhật transaction thành công",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Transaction updated successfully",
+                  "data": {
+                    "_id": "66f3a1b2c3d4e5f6a7b8c9d0",
+                    "type": "stock_in",
+                    "quantity": 5,
+                    "items": [
+                      { "product": "66f3a1b2c3d4e5f6a7b8c111", "quantity": 3 },
+                      { "product": "66f3a1b2c3d4e5f6a7b8c112", "quantity": 2 }
+                    ],
+                    "supplier": "Dell Corporation",
+                    "customer": null,
+                    "note": "Cập nhật ghi chú giao dịch",
+                    "date": "2025-09-17T10:00:00.000Z",
+                    "createdAt": "2025-09-17T10:00:05.000Z",
+                    "updatedAt": "2025-09-17T11:30:05.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Payload không hợp lệ hoặc thiếu hàng khi cập nhật" },
+          "401": { "description": "Không có hoặc sai accessToken" },
+          "404": { "description": "Không tìm thấy user, transaction hoặc product" },
+          "500": { "description": "Lỗi server" }
+        }
+      },
+      "delete": {
+        "summary": "Xóa giao dịch",
+        "tags": ["Transaction"],
+        "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token). Xóa giao dịch và hoàn tác các thay đổi tồn kho.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "ID của giao dịch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Xóa transaction thành công",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Transaction deleted successfully"
+                }
+              }
+            }
+          },
+          "400": { "description": "Không thể xóa giao dịch: không đủ hàng tồn kho để hoàn tác" },
+          "401": { "description": "Không có hoặc sai accessToken" },
+          "404": { "description": "Không tìm thấy user hoặc transaction" },
+          "500": { "description": "Lỗi server" }
+        }
+      }
+    },
     "/api/v1/customers": {
       "get": {
         "summary": "Lấy danh sách khách hàng",

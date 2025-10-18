@@ -380,6 +380,161 @@
         }
       }
     },
+    "/api/v1/user/forgot-password": {
+      "post": {
+        "summary": "Quên mật khẩu - Gửi mã OTP",
+        "tags": ["User"],
+        "description": "Gửi mã OTP đến email để reset mật khẩu. Mã OTP có hiệu lực 5 phút.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "user@example.com",
+                    "description": "Email đã đăng ký"
+                  }
+                },
+                "required": ["email"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Gửi mã OTP thành công",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Password reset code sent to your email"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Email chưa được verify",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Please verify your email first"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Email không tồn tại",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Email does not exist"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        }
+      }
+    },
+    "/api/v1/user/reset-password": {
+      "post": {
+        "summary": "Reset mật khẩu",
+        "tags": ["User"],
+        "description": "Xác thực mã OTP và đặt lại mật khẩu mới",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "user@example.com",
+                    "description": "Email đã đăng ký"
+                  },
+                  "otp": {
+                    "type": "string",
+                    "example": "123456",
+                    "description": "Mã OTP 6 chữ số"
+                  },
+                  "newPassword": {
+                    "type": "string",
+                    "example": "newPassword123",
+                    "description": "Mật khẩu mới"
+                  }
+                },
+                "required": ["email", "otp", "newPassword"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Reset mật khẩu thành công",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Password reset successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "OTP không hợp lệ hoặc đã hết hạn",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "invalid_otp": {
+                    "summary": "OTP không đúng",
+                    "value": {
+                      "success": false,
+                      "message": "Invalid reset code"
+                    }
+                  },
+                  "expired_otp": {
+                    "summary": "OTP đã hết hạn",
+                    "value": {
+                      "success": false,
+                      "message": "Reset code has expired. Please request a new one."
+                    }
+                  },
+                  "missing_fields": {
+                    "summary": "Thiếu thông tin",
+                    "value": {
+                      "success": false,
+                      "message": "Email, OTP, and new password are required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Không tìm thấy user",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "User not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        }
+      }
+    },
     "/api/v1/products/all": {
       "get": {
         "summary": "Lấy tất cả sản phẩm",

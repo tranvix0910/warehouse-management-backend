@@ -380,6 +380,161 @@
         }
       }
     },
+    "/api/v1/user/forgot-password": {
+      "post": {
+        "summary": "Quên mật khẩu - Gửi mã OTP",
+        "tags": ["User"],
+        "description": "Gửi mã OTP đến email để reset mật khẩu. Mã OTP có hiệu lực 5 phút.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "user@example.com",
+                    "description": "Email đã đăng ký"
+                  }
+                },
+                "required": ["email"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Gửi mã OTP thành công",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Password reset code sent to your email"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Email chưa được verify",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Please verify your email first"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Email không tồn tại",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Email does not exist"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        }
+      }
+    },
+    "/api/v1/user/reset-password": {
+      "post": {
+        "summary": "Reset mật khẩu",
+        "tags": ["User"],
+        "description": "Xác thực mã OTP và đặt lại mật khẩu mới",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "user@example.com",
+                    "description": "Email đã đăng ký"
+                  },
+                  "otp": {
+                    "type": "string",
+                    "example": "123456",
+                    "description": "Mã OTP 6 chữ số"
+                  },
+                  "newPassword": {
+                    "type": "string",
+                    "example": "newPassword123",
+                    "description": "Mật khẩu mới"
+                  }
+                },
+                "required": ["email", "otp", "newPassword"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Reset mật khẩu thành công",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Password reset successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "OTP không hợp lệ hoặc đã hết hạn",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "invalid_otp": {
+                    "summary": "OTP không đúng",
+                    "value": {
+                      "success": false,
+                      "message": "Invalid reset code"
+                    }
+                  },
+                  "expired_otp": {
+                    "summary": "OTP đã hết hạn",
+                    "value": {
+                      "success": false,
+                      "message": "Reset code has expired. Please request a new one."
+                    }
+                  },
+                  "missing_fields": {
+                    "summary": "Thiếu thông tin",
+                    "value": {
+                      "success": false,
+                      "message": "Email, OTP, and new password are required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Không tìm thấy user",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "User not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        }
+      }
+    },
     "/api/v1/products/all": {
       "get": {
         "summary": "Lấy tất cả sản phẩm",
@@ -707,6 +862,118 @@
           "400": { "description": "Payload không hợp lệ hoặc thiếu hàng khi stock_out" },
           "401": { "description": "Không có hoặc sai accessToken" },
           "404": { "description": "Không tìm thấy user hoặc product" },
+          "500": { "description": "Lỗi server" }
+        }
+      }
+    },
+    "/api/v1/transactions/{id}": {
+      "put": {
+        "summary": "Cập nhật giao dịch",
+        "tags": ["Transaction"],
+        "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token). Cập nhật thông tin giao dịch và điều chỉnh tồn kho tương ứng.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "ID của giao dịch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "supplier": { "type": "string", "example": "Acer Corporation" },
+                  "customer": { "type": "string", "example": "John Carter" },
+                  "note": { "type": "string", "example": "Cập nhật ghi chú giao dịch" },
+                  "date": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-09-17T10:00:00.000Z"
+                  },
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "product": { "type": "string", "example": "66f3a1b2c3d4e5f6a7b8c111" },
+                        "quantity": { "type": "integer", "example": 5 }
+                      },
+                      "required": ["product", "quantity"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cập nhật transaction thành công",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Transaction updated successfully",
+                  "data": {
+                    "_id": "66f3a1b2c3d4e5f6a7b8c9d0",
+                    "type": "stock_in",
+                    "quantity": 5,
+                    "items": [
+                      { "product": "66f3a1b2c3d4e5f6a7b8c111", "quantity": 3 },
+                      { "product": "66f3a1b2c3d4e5f6a7b8c112", "quantity": 2 }
+                    ],
+                    "supplier": "Dell Corporation",
+                    "customer": null,
+                    "note": "Cập nhật ghi chú giao dịch",
+                    "date": "2025-09-17T10:00:00.000Z",
+                    "createdAt": "2025-09-17T10:00:05.000Z",
+                    "updatedAt": "2025-09-17T11:30:05.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Payload không hợp lệ hoặc thiếu hàng khi cập nhật" },
+          "401": { "description": "Không có hoặc sai accessToken" },
+          "404": { "description": "Không tìm thấy user, transaction hoặc product" },
+          "500": { "description": "Lỗi server" }
+        }
+      },
+      "delete": {
+        "summary": "Xóa giao dịch",
+        "tags": ["Transaction"],
+        "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token). Xóa giao dịch và hoàn tác các thay đổi tồn kho.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "ID của giao dịch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Xóa transaction thành công",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Transaction deleted successfully"
+                }
+              }
+            }
+          },
+          "400": { "description": "Không thể xóa giao dịch: không đủ hàng tồn kho để hoàn tác" },
+          "401": { "description": "Không có hoặc sai accessToken" },
+          "404": { "description": "Không tìm thấy user hoặc transaction" },
           "500": { "description": "Lỗi server" }
         }
       }

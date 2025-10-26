@@ -1,63 +1,13 @@
 [
   {
     "type": "stock_in",
-    "quantity": 30,
-    "items": [
-      { "product": "68baf968cf234af02ab8f98a", "quantity": 10 },
-      { "product": "68baf968cf234af02ab8f98f", "quantity": 20 }
-    ],
-    "supplier": "Acer Corporation",
-    "date": "2024-10-10T09:30:00.000Z"
-  },
-  {
-    "type": "stock_out",
-    "quantity": 18,
-    "items": [
-      { "product": "68baf968cf234af02ab8f985", "quantity": 10 },
-      { "product": "68baf968cf234af02ab8f986", "quantity": 8 }
-    ],
-    "customer": "Sarah Williams",
-    "date": "2024-10-11T11:00:00.000Z"
-  },
-  {
-    "type": "stock_in",
-    "quantity": 25,
-    "items": [
-      { "product": "68baf968cf234af02ab8f987", "quantity": 15 },
-      { "product": "68baf968cf234af02ab8f988", "quantity": 10 }
-    ],
-    "supplier": "MSI Supplier",
-    "date": "2024-10-12T15:45:00.000Z"
-  },
-  {
-    "type": "stock_out",
-    "quantity": 22,
-    "items": [
-      { "product": "68baf968cf234af02ab8f989", "quantity": 12 },
-      { "product": "68baf968cf234af02ab8f98e", "quantity": 10 }
-    ],
-    "customer": "John Doe",
-    "date": "2024-10-13T08:15:00.000Z"
-  },
-  {
-    "type": "stock_in",
     "quantity": 40,
     "items": [
       { "product": "68baf968cf234af02ab8f990", "quantity": 20 },
       { "product": "68baf968cf234af02ab8f991", "quantity": 20 }
     ],
     "supplier": "Dell Technologies",
-    "date": "2024-10-14T10:00:00.000Z"
-  },
-  {
-    "type": "stock_out",
-    "quantity": 16,
-    "items": [
-      { "product": "68baf968cf234af02ab8f98a", "quantity": 6 },
-      { "product": "68baf968cf234af02ab8f98f", "quantity": 10 }
-    ],
-    "customer": "Alice Brown",
-    "date": "2024-10-15T14:20:00.000Z"
+    "date": { "$date": "2025-07-10T10:00:00.000Z" }
   },
   {
     "type": "stock_in",
@@ -67,17 +17,37 @@
       { "product": "68baf968cf234af02ab8f986", "quantity": 20 }
     ],
     "supplier": "Lenovo Distributor",
-    "date": "2024-10-16T13:30:00.000Z"
+    "date": { "$date": "2025-07-20T13:30:00.000Z" }
+  },
+  {
+    "type": "stock_in",
+    "quantity": 30,
+    "items": [
+      { "product": "68baf968cf234af02ab8f98a", "quantity": 10 },
+      { "product": "68baf968cf234af02ab8f98f", "quantity": 20 }
+    ],
+    "supplier": "Acer Corporation",
+    "date": { "$date": "2025-09-10T09:30:00.000Z" }
+  },
+  {
+    "type": "stock_in",
+    "quantity": 25,
+    "items": [
+      { "product": "68baf968cf234af02ab8f987", "quantity": 15 },
+      { "product": "68baf968cf234af02ab8f988", "quantity": 10 }
+    ],
+    "supplier": "MSI Supplier",
+    "date": { "$date": "2025-09-08T15:45:00.000Z" }
   },
   {
     "type": "stock_out",
-    "quantity": 14,
+    "quantity": 22,
     "items": [
-      { "product": "68baf968cf234af02ab8f987", "quantity": 4 },
-      { "product": "68baf968cf234af02ab8f988", "quantity": 10 }
+      { "product": "68baf968cf234af02ab8f989", "quantity": 12 },
+      { "product": "68baf968cf234af02ab8f98e", "quantity": 10 }
     ],
-    "customer": "David Smith",
-    "date": "2024-10-17T09:10:00.000Z"
+    "customer": "John Doe",
+    "date": { "$date": "2025-09-06T08:15:00.000Z" }
   },
   {
     "type": "stock_in",
@@ -87,7 +57,17 @@
       { "product": "68baf968cf234af02ab8f98e", "quantity": 20 }
     ],
     "supplier": "HP Supplier",
-    "date": "2024-10-18T16:00:00.000Z"
+    "date": { "$date": "2025-09-12T16:00:00.000Z" }
+  },
+  {
+    "type": "stock_out",
+    "quantity": 14,
+    "items": [
+      { "product": "68baf968cf234af02ab8f987", "quantity": 4 },
+      { "product": "68baf968cf234af02ab8f988", "quantity": 10 }
+    ],
+    "customer": "David Smith",
+    "date": { "$date": "2025-09-14T09:10:00.000Z" }
   },
   {
     "type": "stock_out",
@@ -97,6 +77,79 @@
       { "product": "68baf968cf234af02ab8f991", "quantity": 8 }
     ],
     "customer": "Michael Lee",
-    "date": "2024-10-19T12:45:00.000Z"
+    "date": { "$date": "2025-09-15T12:45:00.000Z" }
+  },
+  {
+    "type": "stock_in",
+    "quantity": 15,
+    "items": [
+      {
+        "product": { "$oid": "68baf968cf234af02ab8f98a" },
+        "quantity": 10
+      },
+      {
+        "product": { "$oid": "68baf968cf234af02ab8f98f" },
+        "quantity": 5
+      }
+    ],
+    "supplier": "Acer Supplier",
+    "note": "Nhập hàng đợt 1",
+    "date": { "$date": "2025-07-05T10:00:00.000Z" }
+  },
+  {
+    "type": "stock_in",
+    "quantity": 20,
+    "items": [
+      {
+        "product": { "$oid": "68baf968cf234af02ab8f988" },
+        "quantity": 20
+      }
+    ],
+    "supplier": "ASUS Rog",
+    "note": "Tran Dai Vi",
+    "date": { "$date": "2025-09-09T08:42:55.413Z" }
+  },
+  {
+    "type": "stock_in",
+    "quantity": 50,
+    "items": [
+      {
+        "product": { "$oid": "68baf968cf234af02ab8f987" },
+        "quantity": 50
+      }
+    ],
+    "supplier": "ASUS Rog",
+    "note": "Tran Dai Vi",
+    "date": { "$date": "2025-09-11T08:50:42.854Z" }
+  },
+  {
+    "type": "stock_in",
+    "quantity": 30,
+    "items": [
+      {
+        "product": { "$oid": "68baf968cf234af02ab8f986" },
+        "quantity": 30
+      }
+    ],
+    "supplier": "ASUS Rog",
+    "note": "Tran Dai Vi",
+    "date": { "$date": "2025-09-13T09:46:35.851Z" }
+  },
+  {
+    "type": "stock_in",
+    "quantity": 35,
+    "items": [
+      {
+        "product": { "$oid": "68baf968cf234af02ab8f987" },
+        "quantity": 15
+      },
+      {
+        "product": { "$oid": "68baf968cf234af02ab8f989" },
+        "quantity": 20
+      }
+    ],
+    "supplier": "ASUS Rog",
+    "note": "Tran Dai Vi",
+    "date": { "$date": "2025-09-16T14:38:43.635Z" }
   }
 ]

@@ -1,8 +1,8 @@
-import TransactionModel from '../models/TransactionModel.js';
-import UserModel from '../models/UserModel.js';
-import ProductModel from '../models/ProductModel.js';
-import SupplierModel from '../models/SupplierModel.js';
-import CustomerModel from '../models/CustomerModel.js';
+import TransactionModel from "../models/TransactionModel.js";
+import UserModel from "../models/UserModel.js";
+import ProductModel from "../models/ProductModel.js";
+import SupplierModel from "../models/SupplierModel.js";
+import CustomerModel from "../models/CustomerModel.js";
 
 export const createTransaction = async (req, res) => {
   const userId = req.user._id;
@@ -12,23 +12,31 @@ export const createTransaction = async (req, res) => {
     // 1) Validate user
     const user = await UserModel.findById(userId);
     if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
     // 2) Validate payload
-    if (!type || !['stock_in', 'stock_out'].includes(type)) {
-      return res.status(400).json({ success: false, message: 'Invalid transaction type' });
+    if (!type || !["stock_in", "stock_out"].includes(type)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid transaction type" });
     }
 
     if (!Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({ success: false, message: 'Items are required' });
+      return res
+        .status(400)
+        .json({ success: false, message: "Items are required" });
     }
 
     const existingCustomer = await CustomerModel.find({ name: customer });
     const existingSupplier = await SupplierModel.find({ name: supplier });
 
     if (!existingCustomer || !existingSupplier) {
-      return res.status(404).json({ success: false, message: 'Customer or Supplier not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "Customer or Supplier not found" });
     }
 
     // 3) Validate items and compute total quantity
@@ -40,15 +48,19 @@ export const createTransaction = async (req, res) => {
       const qty = Number(item.quantity);
 
       if (!productId || !qty || qty <= 0 || !Number.isFinite(qty)) {
-        return res.status(400).json({ success: false, message: 'Invalid item payload' });
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid item payload" });
       }
 
       const product = await ProductModel.findById(productId);
       if (!product) {
-        return res.status(404).json({ success: false, message: 'Product not found' });
+        return res
+          .status(404)
+          .json({ success: false, message: "Product not found" });
       }
 
-      if (type === 'stock_out' && product.quantity < qty) {
+      if (type === "stock_out" && product.quantity < qty) {
         return res.status(400).json({
           success: false,
           message: `Insufficient stock for product ${product.productName}`,
@@ -61,7 +73,7 @@ export const createTransaction = async (req, res) => {
 
     // 4) Apply stock updates
     for (const { product, qty } of productUpdates) {
-      if (type === 'stock_in') {
+      if (type === "stock_in") {
         product.quantity += qty;
       } else {
         product.quantity -= qty;
@@ -74,7 +86,10 @@ export const createTransaction = async (req, res) => {
       type,
       note,
       quantity: totalQuantity,
-      items: items.map((it) => ({ product: it.product, quantity: Number(it.quantity) })),
+      items: items.map((it) => ({
+        product: it.product,
+        quantity: Number(it.quantity),
+      })),
       supplier: supplier || undefined,
       customer: customer || undefined,
       date: date ? new Date(date) : new Date(),
@@ -84,7 +99,7 @@ export const createTransaction = async (req, res) => {
 
     return res.status(201).json({
       success: true,
-      message: 'Transaction created successfully',
+      message: "Transaction created successfully",
       data: newTransaction,
     });
   } catch (error) {
@@ -101,7 +116,7 @@ export const getAllTransaction = async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'User not found',
+        message: "User not found",
       });
     }
 
@@ -109,13 +124,13 @@ export const getAllTransaction = async (req, res) => {
     // Populate chi tiết sản phẩm trong items
     const transactions = await TransactionModel.find()
       .populate({
-        path: 'items.product',
+        path: "items.product",
       })
       .sort({ date: -1 });
 
     return res.status(200).json({
       success: true,
-      message: 'Get transactions successfully',
+      message: "Get transactions successfully",
       data: transactions,
     });
   } catch (error) {
@@ -134,14 +149,20 @@ export const deleteTransaction = async (req, res) => {
     // 1) Validate user
     const user = await UserModel.findById(userId);
     if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
     // 2) Find transaction with populated items
-    const transaction = await TransactionModel.findById(transactionId).populate('items.product');
+    const transaction = await TransactionModel.findById(transactionId).populate(
+      "items.product"
+    );
 
     if (!transaction) {
-      return res.status(404).json({ success: false, message: 'Transaction not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "Transaction not found" });
     }
 
     // 3) Reverse stock changes
@@ -149,7 +170,7 @@ export const deleteTransaction = async (req, res) => {
       const product = item.product;
       const qty = item.quantity;
 
-      if (transaction.type === 'stock_in') {
+      if (transaction.type === "stock_in") {
         // Reverse stock_in: subtract the quantity
         if (product.quantity < qty) {
           return res.status(400).json({
@@ -170,7 +191,7 @@ export const deleteTransaction = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: 'Transaction deleted successfully',
+      message: "Transaction deleted successfully",
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -186,36 +207,44 @@ export const updateTransaction = async (req, res) => {
     // 1) Validate user
     const user = await UserModel.findById(userId);
     if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
     // 2) Find existing transaction with populated items
-    const existingTransaction = await TransactionModel.findById(transactionId).populate(
-      'items.product'
-    );
+    const existingTransaction = await TransactionModel.findById(
+      transactionId
+    ).populate("items.product");
 
     if (!existingTransaction) {
-      return res.status(404).json({ success: false, message: 'Transaction not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "Transaction not found" });
     }
     const existingCustomer = await CustomerModel.find({ name: customer });
     const existingSupplier = await SupplierModel.find({ name: supplier });
 
     if (!existingCustomer || !existingSupplier) {
-      return res.status(404).json({ success: false, message: 'Customer or Supplier not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "Customer or Supplier not found" });
     }
 
     // 3) Validate new payload (do not allow changing transaction type)
 
     if (items && (!Array.isArray(items) || items.length === 0)) {
-      return res.status(400).json({ success: false, message: 'Items are required' });
+      return res
+        .status(400)
+        .json({ success: false, message: "Items are required" });
     }
 
     // 4) Reverse existing stock changes first
     for (const item of existingTransaction.items) {
       const product = item.product;
       const qty = item.quantity;
-
-      if (existingTransaction.type === 'stock_in') {
+      if (existingTransaction.type === "stock_in") {
+        // Reverse stock_in: subtract the quantity
         if (product.quantity < qty) {
           return res.status(400).json({
             success: false,
@@ -238,16 +267,20 @@ export const updateTransaction = async (req, res) => {
         const qty = Number(item.quantity);
 
         if (!productId || !qty || qty <= 0 || !Number.isFinite(qty)) {
-          return res.status(400).json({ success: false, message: 'Invalid item payload' });
+          return res
+            .status(400)
+            .json({ success: false, message: "Invalid item payload" });
         }
 
         const product = await ProductModel.findById(productId);
         if (!product) {
-          return res.status(404).json({ success: false, message: 'Product not found' });
+          return res
+            .status(404)
+            .json({ success: false, message: "Product not found" });
         }
 
         const newType = existingTransaction.type;
-        if (newType === 'stock_out' && product.quantity < qty) {
+        if (newType === "stock_out" && product.quantity < qty) {
           return res.status(400).json({
             success: false,
             message: `Insufficient stock for product ${product.productName}`,
@@ -261,7 +294,7 @@ export const updateTransaction = async (req, res) => {
       // Apply new stock updates
       for (const { product, qty } of productUpdates) {
         const newType = existingTransaction.type;
-        if (newType === 'stock_in') {
+        if (newType === "stock_in") {
           product.quantity += qty;
         } else {
           product.quantity -= qty;
@@ -284,14 +317,18 @@ export const updateTransaction = async (req, res) => {
       updateData.quantity = newTotalQuantity;
     }
 
-    const updatedTransaction = await TransactionModel.findByIdAndUpdate(transactionId, updateData, {
-      new: true,
-      runValidators: true,
-    }).populate('items.product');
+    const updatedTransaction = await TransactionModel.findByIdAndUpdate(
+      transactionId,
+      updateData,
+      {
+        new: true,
+        runValidators: true,
+      }
+    ).populate("items.product");
 
     return res.status(200).json({
       success: true,
-      message: 'Transaction updated successfully',
+      message: "Transaction updated successfully",
       data: updatedTransaction,
     });
   } catch (error) {

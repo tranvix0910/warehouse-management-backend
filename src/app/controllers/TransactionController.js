@@ -216,7 +216,6 @@ export const updateTransaction = async (req, res) => {
       const qty = item.quantity;
 
       if (existingTransaction.type === 'stock_in') {
-        // Reverse stock_in: subtract the quantity
         if (product.quantity < qty) {
           return res.status(400).json({
             success: false,
@@ -225,13 +224,11 @@ export const updateTransaction = async (req, res) => {
         }
         product.quantity -= qty;
       } else {
-        // Reverse stock_out: add back the quantity
         product.quantity += qty;
       }
       await product.save();
     }
 
-    // 5) Apply new stock changes if items are provided
     let newTotalQuantity = 0;
     const productUpdates = [];
 

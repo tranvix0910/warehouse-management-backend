@@ -1,11 +1,66 @@
-export const generateOTPEmailTemplate = (username, otpCode, isResend = false) => {
+export const generateOTPEmailTemplate = (
+  username,
+  otpCode,
+  type = "register"
+) => {
+  // type can be: 'register', 'resend', 'forgot-password'
+
+  const config = {
+    register: {
+      title: "📧 Email Verification",
+      headerColor: "linear-gradient(135deg, #28a745 0%, #20c997 100%)",
+      primaryColor: "#28a745",
+      bgGradient: "linear-gradient(135deg, #f0fff4 0%, #d4f4dd 100%)",
+      message:
+        "Thank you for registering with Nagav Inventory! Please verify your email address to activate your account:",
+      label: "Your Verification Code",
+      securityNote:
+        "🔒 <strong>Security Notice:</strong> Never share this code with anyone. Our team will never ask for your verification code.",
+      footerNote:
+        "If you didn't request this verification code, please ignore this email.",
+      additionalMessage:
+        "Simply enter this code in the verification screen to complete your registration and start managing your inventory!",
+    },
+    resend: {
+      title: "📧 Email Verification",
+      headerColor: "linear-gradient(135deg, #28a745 0%, #20c997 100%)",
+      primaryColor: "#28a745",
+      bgGradient: "linear-gradient(135deg, #f0fff4 0%, #d4f4dd 100%)",
+      message:
+        "Here is your new verification code to complete your account setup:",
+      label: "Your Verification Code",
+      securityNote:
+        "🔒 <strong>Security Notice:</strong> Never share this code with anyone. Our team will never ask for your verification code.",
+      footerNote:
+        "If you didn't request this verification code, please ignore this email.",
+      additionalMessage:
+        "Simply enter this code in the verification screen to complete your registration and start managing your inventory!",
+    },
+    "forgot-password": {
+      title: "🔐 Reset Your Password",
+      headerColor: "linear-gradient(135deg, #28a745 0%, #20c997 100%)",
+      primaryColor: "#28a745",
+      bgGradient: "linear-gradient(135deg, #f0fff4 0%, #d4f4dd 100%)",
+      message:
+        "We received a request to reset your password. Use the verification code below to proceed:",
+      label: "Your Reset Code",
+      securityNote:
+        "⚠️ <strong>Security Notice:</strong> If you didn't request a password reset, please ignore this email and your password will remain unchanged.",
+      footerNote:
+        "If you didn't request a password reset, please ignore this email.",
+      additionalMessage: "",
+    },
+  };
+
+  const settings = config[type] || config.register;
+
   return `
     <!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Email Verification - Nagav Inventory</title>
+        <title>${settings.title} - Nagav Inventory</title>
         <style>
             body {
                 margin: 0;
@@ -23,7 +78,7 @@ export const generateOTPEmailTemplate = (username, otpCode, isResend = false) =>
                 box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             }
             .header {
-                background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+                background: ${settings.headerColor};
                 padding: 40px 30px;
                 text-align: center;
                 color: white;
@@ -55,27 +110,15 @@ export const generateOTPEmailTemplate = (username, otpCode, isResend = false) =>
                 line-height: 1.6;
             }
             .otp-container {
-                background: linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%);
-                border: 2px solid #4A90E2;
+                background: ${settings.bgGradient};
+                border: 2px solid ${settings.primaryColor};
                 border-radius: 16px;
                 padding: 30px;
                 margin: 30px 0;
-                position: relative;
-            }
-            .otp-container::before {
-                content: '';
-                position: absolute;
-                top: -2px;
-                left: -2px;
-                right: -2px;
-                bottom: -2px;
-                background: linear-gradient(135deg, #4A90E2, #357ABD);
-                border-radius: 16px;
-                z-index: -1;
             }
             .otp-label {
                 font-size: 14px;
-                color: #4A90E2;
+                color: ${settings.primaryColor};
                 font-weight: 600;
                 text-transform: uppercase;
                 letter-spacing: 1px;
@@ -84,7 +127,7 @@ export const generateOTPEmailTemplate = (username, otpCode, isResend = false) =>
             .otp-code {
                 font-size: 36px;
                 font-weight: 700;
-                color: #4A90E2;
+                color: ${settings.primaryColor};
                 letter-spacing: 8px;
                 margin: 0;
                 font-family: 'Courier New', monospace;
@@ -114,7 +157,7 @@ export const generateOTPEmailTemplate = (username, otpCode, isResend = false) =>
                 font-size: 14px;
             }
             .footer .brand {
-                color: #4A90E2;
+                color: ${settings.primaryColor};
                 font-weight: 600;
                 font-size: 16px;
             }
@@ -153,7 +196,7 @@ export const generateOTPEmailTemplate = (username, otpCode, isResend = false) =>
     <body>
         <div class="container">
             <div class="header">
-                <h1>📧 Email Verification</h1>
+                <h1>${settings.title}</h1>
                 <p>Nagav Inventory Management System</p>
             </div>
             
@@ -163,15 +206,11 @@ export const generateOTPEmailTemplate = (username, otpCode, isResend = false) =>
                 </div>
                 
                 <div class="message">
-                    ${
-                      isResend
-                        ? 'Here is your new verification code to complete your account setup:'
-                        : 'Thank you for registering with Nagav Inventory! Please verify your email address to activate your account:'
-                    }
+                    ${settings.message}
                 </div>
                 
                 <div class="otp-container">
-                    <div class="otp-label">Your Verification Code</div>
+                    <div class="otp-label">${settings.label}</div>
                     <div class="otp-code">${otpCode}</div>
                 </div>
                 
@@ -180,18 +219,23 @@ export const generateOTPEmailTemplate = (username, otpCode, isResend = false) =>
                 </div>
                 
                 <div class="security-note">
-                    <p>🔒 <strong>Security Notice:</strong> Never share this code with anyone. Our team will never ask for your verification code.</p>
+                    <p>${settings.securityNote}</p>
                 </div>
                 
+                ${
+                  settings.additionalMessage
+                    ? `
                 <div class="divider"></div>
-                
                 <div class="message">
-                    Simply enter this code in the verification screen to complete your registration and start managing your inventory!
+                    ${settings.additionalMessage}
                 </div>
+                `
+                    : ""
+                }
             </div>
             
             <div class="footer">
-                <p>If you didn't request this verification code, please ignore this email.</p>
+                <p>${settings.footerNote}</p>
                 <p>This is an automated message, please do not reply to this email.</p>
                 <div class="brand">🏢 Nagav Inventory Management</div>
             </div>

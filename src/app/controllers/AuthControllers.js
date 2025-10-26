@@ -1,23 +1,22 @@
-import UserModel from '../models/UserModel.js';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { sendMail } from '../../services/MailService.js';
+import UserModel from "../models/UserModel.js";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { sendMail } from "../../services/MailService.js";
 import {
   generateOTPEmailTemplate,
   generateWelcomeEmailTemplate,
-} from '../../services/EmailTemplates.js';
-import TempUserModel from '../models/TempUserModel.js';
-
+} from "../../services/EmailTemplates.js";
+import TempUserModel from "../models/TempUserModel.js";
 
 const generateAccessToken = (user) => {
   return jwt.sign({ _id: user._id }, process.env.JWT_ACCESSTOKEN_KEY, {
-    expiresIn: '5m',
+    expiresIn: "5m",
   });
 };
 
 const generateRefreshToken = (user) => {
   return jwt.sign({ _id: user._id }, process.env.JWT_REFRESHTOKEN_KEY, {
-    expiresIn: '365d',
+    expiresIn: "365d",
   });
 };
 
@@ -34,7 +33,7 @@ export const register = async (req, res) => {
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        message: 'Email has been used',
+        message: "Email has been used",
       });
     }
 
@@ -63,12 +62,13 @@ export const register = async (req, res) => {
     await tempUser.save();
 
     // Send OTP email
-    const emailHtml = generateOTPEmailTemplate(username, otpCode, false);
-    sendMail(email, 'Email Verification - Nagav Inventory', emailHtml);
+    const emailHtml = generateOTPEmailTemplate(username, otpCode, "register");
+    sendMail(email, "Email Verification - Nagav Inventory", emailHtml);
 
     return res.status(200).json({
       success: true,
-      message: 'Register successfully. Please check your email for verification code.',
+      message:
+        "Register successfully. Please check your email for verification code.",
     });
   } catch (error) {
     return res.status(500).json({
@@ -84,18 +84,23 @@ export const login = async (req, res) => {
   try {
     const user = await UserModel.findOne({ email });
     if (!user) {
-      return res.status(404).json({ success: false, message: 'Email does not exist' });
+      return res
+        .status(404)
+        .json({ success: false, message: "Email does not exist" });
     }
 
     const isMatch = await bcrypt.compare(req.body.password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ success: false, message: 'Incorrect password' });
+      return res
+        .status(400)
+        .json({ success: false, message: "Incorrect password" });
     }
 
     if (!user.isEmailVerified) {
-      return res
-        .status(400)
-        .json({ success: false, message: 'Please verify your email before logging in' });
+      return res.status(400).json({
+        success: false,
+        message: "Please verify your email before logging in",
+      });
     }
 
     const accessToken = generateAccessToken(user);
@@ -105,7 +110,7 @@ export const login = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: 'Login successful',
+      message: "Login successful",
       data: { ...rest },
       accessToken,
       refreshToken,
@@ -116,28 +121,35 @@ export const login = async (req, res) => {
 };
 
 // REFRESH TOKEN
-
 export const refreshToken = async (req, res) => {
   const { refreshToken } = req.body;
   try {
     if (!refreshToken) {
-      return res.status(401).json({ success: false, message: "You're not authenticated" });
+      return res
+        .status(401)
+        .json({ success: false, message: "You're not authenticated" });
     }
 
-    jwt.verify(refreshToken, process.env.JWT_REFRESHTOKEN_KEY, async (err, user) => {
-      if (err) {
-        return res.status(403).json({ success: false, message: 'RefreshToken is invalid' });
+    jwt.verify(
+      refreshToken,
+      process.env.JWT_REFRESHTOKEN_KEY,
+      async (err, user) => {
+        if (err) {
+          return res
+            .status(403)
+            .json({ success: false, message: "RefreshToken is invalid" });
+        }
+
+        const newAccessToken = generateAccessToken(user);
+        const newRefreshToken = generateRefreshToken(user);
+
+        return res.status(200).json({
+          success: true,
+          accessToken: newAccessToken,
+          refreshToken: newRefreshToken,
+        });
       }
-
-      const newAccessToken = generateAccessToken(user);
-      const newRefreshToken = generateRefreshToken(user);
-
-      return res.status(200).json({
-        success: true,
-        accessToken: newAccessToken,
-        refreshToken: newRefreshToken,
-      });
-    });
+    );
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
@@ -150,24 +162,30 @@ export const verifyOTP = async (req, res) => {
     // Check if user exists in temporary database
     const tempUser = await TempUserModel.findOne({ email });
     if (!tempUser) {
-      return res.status(404).json({ success: false, message: 'User not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
     // Check if OTP exists and is valid
     if (!tempUser.otp || !tempUser.otp.code || !tempUser.otp.expiresAt) {
-      return res
-        .status(400)
-        .json({ success: false, message: 'No OTP found. Please request a new one.' });
+      return res.status(400).json({
+        success: false,
+        message: "No OTP found. Please request a new one.",
+      });
     }
 
     if (new Date() > tempUser.otp.expiresAt) {
-      return res
-        .status(400)
-        .json({ success: false, message: 'OTP has expired. Please request a new one.' });
+      return res.status(400).json({
+        success: false,
+        message: "OTP has expired. Please request a new one.",
+      });
     }
 
     if (tempUser.otp.code !== otp) {
-      return res.status(400).json({ success: false, message: 'Invalid OTP code' });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid OTP code" });
     }
 
     // Hash password and create user in main database
@@ -188,11 +206,11 @@ export const verifyOTP = async (req, res) => {
 
     // Send welcome email
     const welcomeHtml = generateWelcomeEmailTemplate(tempUser.username);
-    sendMail(email, 'Welcome to Nagav Inventory!', welcomeHtml);
+    sendMail(email, "Welcome to Nagav Inventory!", welcomeHtml);
 
     return res.status(200).json({
       success: true,
-      message: 'Email verified successfully',
+      message: "Email verified successfully",
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -206,7 +224,9 @@ export const resendOTP = async (req, res) => {
     // Check if user exists in temporary database
     const tempUser = await TempUserModel.findOne({ email });
     if (!tempUser) {
-      return res.status(404).json({ success: false, message: 'User not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
     // Generate new OTP
@@ -222,12 +242,16 @@ export const resendOTP = async (req, res) => {
     await tempUser.save();
 
     // Send OTP email
-    const emailHtml = generateOTPEmailTemplate(tempUser.username, otpCode, true);
-    sendMail(email, 'New Verification Code - Nagav Inventory', emailHtml);
+    const emailHtml = generateOTPEmailTemplate(
+      tempUser.username,
+      otpCode,
+      "resend"
+    );
+    sendMail(email, "New Verification Code - Nagav Inventory", emailHtml);
 
     return res.status(200).json({
       success: true,
-      message: 'OTP sent successfully. Please check your email.',
+      message: "OTP sent successfully. Please check your email.",
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -240,7 +264,9 @@ export const logout = async (req, res) => {
   try {
     const user = await UserModel.findById(userId);
     if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
     // Xóa refreshToken trong DB
@@ -249,7 +275,7 @@ export const logout = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: 'Logged out successfully',
+      message: "Logged out successfully",
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });

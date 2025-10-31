@@ -6,7 +6,6 @@ import {
   generateOTPEmailTemplate,
   generateWelcomeEmailTemplate,
 } from "../../services/EmailTemplates.js";
-import TempUserModel from "../models/TempUserModel.js";
 
 const generateAccessToken = (user) => {
   return jwt.sign({ _id: user._id }, process.env.JWT_ACCESSTOKEN_KEY, {
@@ -28,40 +27,37 @@ const generateOTP = () => {
 export const register = async (req, res) => {
   const { email, password, username } = req.body;
   try {
-    // Check if user already exists in main database
     const existingUser = await UserModel.findOne({ email });
+
     if (existingUser) {
-      return res.status(400).json({
-        success: false,
-        message: "Email has been used",
-      });
+      if (existingUser.isEmailVerified) {
+        return res.status(400).json({
+          success: false,
+          message: "Email has been used",
+        });
+      } else {
+        // Xóa tài khoản chưa xác minh để tạo lại
+        await UserModel.deleteOne({ email });
+      }
     }
 
-    // Check if user already exists in temporary database
-    const existingTempUser = await TempUserModel.findOne({ email });
-    if (existingTempUser) {
-      // Delete existing temp user and create new one
-      await TempUserModel.deleteOne({ email });
-    }
-
-    // Generate OTP
+    const hashedPassword = await bcrypt.hash(password, 10);
     const otpCode = generateOTP();
-    const otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+    const otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
 
-    // Create temporary user in database
-    const tempUser = new TempUserModel({
+    const newUser = new UserModel({
       email,
       username,
-      password, // Store plain password temporarily
+      password: hashedPassword,
+      isEmailVerified: false,
       otp: {
         code: otpCode,
         expiresAt: otpExpiresAt,
       },
     });
 
-    await tempUser.save();
+    await newUser.save();
 
-    // Send OTP email
     const emailHtml = generateOTPEmailTemplate(username, otpCode, "register");
     sendMail(email, "Email Verification - Nagav Inventory", emailHtml);
 
@@ -71,10 +67,7 @@ export const register = async (req, res) => {
         "Register successfully. Please check your email for verification code.",
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -158,103 +151,124 @@ export const refreshToken = async (req, res) => {
 // VERIFY OTP
 export const verifyOTP = async (req, res) => {
   const { email, otp } = req.body;
+
   try {
-    // Check if user exists in temporary database
-    const tempUser = await TempUserModel.findOne({ email });
-    if (!tempUser) {
+    // 1️⃣ Tìm user theo email
+    const user = await UserModel.findOne({ email });
+    if (!user) {
       return res
         .status(404)
         .json({ success: false, message: "User not found" });
     }
 
-    // Check if OTP exists and is valid
-    if (!tempUser.otp || !tempUser.otp.code || !tempUser.otp.expiresAt) {
+    // 2️⃣ Kiểm tra xem đã xác minh chưa
+    if (user.isEmailVerified) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Email already verified" });
+    }
+
+    // 3️⃣ Kiểm tra OTP có tồn tại không
+    if (!user.otp || !user.otp.code || !user.otp.expiresAt) {
       return res.status(400).json({
         success: false,
         message: "No OTP found. Please request a new one.",
       });
     }
 
-    if (new Date() > tempUser.otp.expiresAt) {
+    // 4️⃣ Kiểm tra thời hạn OTP
+    if (new Date() > user.otp.expiresAt) {
       return res.status(400).json({
         success: false,
         message: "OTP has expired. Please request a new one.",
       });
     }
 
-    if (tempUser.otp.code !== otp) {
+    // 5️⃣ Kiểm tra mã OTP
+    if (user.otp.code !== otp) {
       return res
         .status(400)
         .json({ success: false, message: "Invalid OTP code" });
     }
 
-    // Hash password and create user in main database
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(tempUser.password, salt);
+    // 6️⃣ Cập nhật trạng thái xác minh
+    user.isEmailVerified = true;
+    user.otp = undefined; // Xóa OTP khỏi DB
+    await user.save();
 
-    const newUser = new UserModel({
-      email: tempUser.email,
-      username: tempUser.username,
-      password: hash,
-      isEmailVerified: true,
-    });
-
-    await newUser.save();
-
-    // Remove from temporary database
-    await TempUserModel.deleteOne({ email });
-
-    // Send welcome email
-    const welcomeHtml = generateWelcomeEmailTemplate(tempUser.username);
+    // 7️⃣ Gửi email chào mừng
+    const welcomeHtml = generateWelcomeEmailTemplate(user.username);
     sendMail(email, "Welcome to Nagav Inventory!", welcomeHtml);
 
     return res.status(200).json({
       success: true,
-      message: "Email verified successfully",
+      message: "Email verified successfully!",
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    console.error("Verify OTP error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
   }
 };
 
 // RESEND OTP
 export const resendOTP = async (req, res) => {
-  const { email } = req.body;
   try {
-    // Check if user exists in temporary database
-    const tempUser = await TempUserModel.findOne({ email });
-    if (!tempUser) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
+    const { email } = req.body;
+
+    // 1️⃣ Kiểm tra có nhập email không
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required.",
+      });
     }
 
-    // Generate new OTP
-    const otpCode = generateOTP();
-    const otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+    // 2️⃣ Tìm user trong database
+    const user = await UserModel.findOne({ email });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "This email is not registered.",
+      });
+    }
 
-    // Update OTP in temporary database
-    tempUser.otp = {
+    // 3️⃣ Kiểm tra user đã xác thực chưa
+    if (user.isVerified) {
+      return res.status(400).json({
+        success: false,
+        message: "This account is already verified.",
+      });
+    }
+
+    // 4️⃣ Tạo OTP mới
+    const otpCode = generateOTP(); // Ví dụ: 6 số ngẫu nhiên
+    const otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 phút
+
+    // 5️⃣ Cập nhật lại OTP
+    user.otp = {
       code: otpCode,
       expiresAt: otpExpiresAt,
     };
+    await user.save();
 
-    await tempUser.save();
-
-    // Send OTP email
-    const emailHtml = generateOTPEmailTemplate(
-      tempUser.username,
-      otpCode,
-      "resend"
-    );
-    sendMail(email, "New Verification Code - Nagav Inventory", emailHtml);
+    // 6️⃣ Gửi email OTP mới
+    const emailHtml = generateOTPEmailTemplate(user.username, otpCode, "resend");
+    await sendMail(email, "New Verification Code - Nagav Inventory", emailHtml);
 
     return res.status(200).json({
       success: true,
-      message: "OTP sent successfully. Please check your email.",
+      message: "A new OTP has been sent. Please check your email.",
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    console.error("Error in resendOTP:", error);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while resending the OTP.",
+    });
   }
 };
 

@@ -727,6 +727,148 @@
         }
       }
     },
+    "/api/v1/products/update/{productId}": {
+      "put": {
+        "summary": "Cập nhật sản phẩm",
+        "tags": ["Product"],
+        "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token). Cập nhật thông tin sản phẩm, có thể kèm ảnh mới (upload qua Cloudinary).",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "ID của sản phẩm cần cập nhật"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Ảnh sản phẩm mới (optional, nếu không gửi sẽ giữ ảnh cũ)"
+                  },
+                  "productName": {
+                    "type": "string",
+                    "example": "Laptop Dell XPS 13 Updated"
+                  },
+                  "SKU": { "type": "string", "example": "DELLXPS13-001" },
+                  "category": { "type": "string", "example": "Ultrabook" },
+                  "quantity": { "type": "integer", "example": 60 },
+                  "cost": { "type": "number", "example": 850 },
+                  "price": { "type": "number", "example": 1100 },
+                  "RAM": { "type": "string", "example": "32GB" },
+                  "date": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2024-01-15"
+                  },
+                  "GPU": { "type": "string", "example": "Intel Iris Xe Graphics" },
+                  "color": { "type": "string", "example": "Black" },
+                  "processor": {
+                    "type": "string",
+                    "example": "Intel Core i7-1185G7"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cập nhật sản phẩm thành công",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Product updated successfully",
+                  "product": {
+                    "_id": "64a1b23c45f6789012345678",
+                    "image": "https://res.cloudinary.com/demo/image/upload/v1234567890/product-updated.jpg",
+                    "productName": "Laptop Dell XPS 13 Updated",
+                    "SKU": "DELLXPS13-001",
+                    "category": "Ultrabook",
+                    "quantity": 60,
+                    "cost": "850",
+                    "price": "1100",
+                    "RAM": "32GB",
+                    "date": "2024-01-15",
+                    "GPU": "Intel Iris Xe Graphics",
+                    "color": "Black",
+                    "processor": "Intel Core i7-1185G7"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "SKU đã tồn tại (khi thay đổi SKU)"
+          },
+          "401": {
+            "description": "Không có hoặc sai accessToken"
+          },
+          "404": {
+            "description": "Không tìm thấy sản phẩm hoặc user"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        }
+      }
+    },
+    "/api/v1/products/delete/{productId}": {
+      "delete": {
+        "summary": "Xóa sản phẩm",
+        "tags": ["Product"],
+        "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token). Xóa sản phẩm khỏi hệ thống.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "ID của sản phẩm cần xóa"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Xóa sản phẩm thành công",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Product deleted successfully"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Không có hoặc sai accessToken"
+          },
+          "404": {
+            "description": "Không tìm thấy sản phẩm hoặc user"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        }
+      }
+    },
     "/api/v1/transactions": {
       "get": {
         "summary": "Lấy danh sách giao dịch (transactions)",

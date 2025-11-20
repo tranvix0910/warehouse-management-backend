@@ -1,7 +1,7 @@
 import UserModel from "../models/UserModel.js";
-import bcrypt from 'bcryptjs';
-import { sendMail } from '../../services/MailService.js';
-import { generateOTPEmailTemplate } from '../../services/EmailTemplates.js';
+import bcrypt from "bcryptjs";
+import { sendMail } from "../../services/MailService.js";
+import { generateOTPEmailTemplate } from "../../services/EmailTemplates.js";
 
 const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -10,12 +10,13 @@ const generateOTP = () => {
 export const getInfoUser = async (req, res) => {
   const userId = req.user._id;
   try {
-    const user = await UserModel.findById(userId);
+    const user = await UserModel.findById(userId).select("-password -otp");
     if (!user) {
       return res
         .status(404)
         .json({ success: false, message: "User not found" });
     }
+
     return res
       .status(200)
       .json({ success: true, message: "Get info success", data: user });
@@ -45,10 +46,13 @@ export const changeInfoUser = async (req, res) => {
 
     await user.save();
 
+    // Return user without password and otp
+    const { password, otp, ...userWithoutSensitiveData } = user.toObject();
+
     return res.status(200).json({
       success: true,
       message: "User info updated successfully",
-      data: user,
+      data: userWithoutSensitiveData,
     });
   } catch (error) {
     return res.status(500).json({
@@ -61,7 +65,7 @@ export const changeInfoUser = async (req, res) => {
 // FORGOT PASSWORD - Send OTP
 export const forgotPassword = async (req, res) => {
   const { email } = req.body;
-  
+
   try {
     // Check if user exists
     const user = await UserModel.findOne({ email });
@@ -92,8 +96,12 @@ export const forgotPassword = async (req, res) => {
     await user.save();
 
     // Send OTP email
-    const emailHtml = generateOTPEmailTemplate(user.username, otpCode, 'forgot-password');
-    sendMail(email, 'Reset Password - Nagav Inventory', emailHtml);
+    const emailHtml = generateOTPEmailTemplate(
+      user.username,
+      otpCode,
+      "forgot-password"
+    );
+    sendMail(email, "Reset Password - Nagav Inventory", emailHtml);
 
     return res.status(200).json({
       success: true,

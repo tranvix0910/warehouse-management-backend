@@ -141,6 +141,41 @@ export const getAllTransaction = async (req, res) => {
   }
 };
 
+export const getInfoTransaction = async (req, res) => {
+  const userId = req.user._id;
+  try {
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    const totalTrans = await TransactionModel.countDocuments();
+    const totalStockOut = await TransactionModel.countDocuments({
+      type: "stock_out",
+    });
+    const totalStockIn = await TransactionModel.countDocuments({
+      type: "stock_in",
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        totalTrans,
+        totalStockOut,
+        totalStockIn,
+      },
+    });
+  } catch (error) {
+    console.error("Error getInfoTransaction:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 export const deleteTransaction = async (req, res) => {
   const userId = req.user._id;
   const transactionId = req.params.id;

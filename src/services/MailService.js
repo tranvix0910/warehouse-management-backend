@@ -1,28 +1,23 @@
 import nodemailer from "nodemailer";
-
 import dotenv from "dotenv";
 
 dotenv.config();
 
 export const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  service: "Gmail",
-  port: 465,
-  secure: true, // Use `true` for port 465, `false` for all other ports
+  port: 465,      // 👉 ĐỔI SANG 465 (SSL)
+  secure: true,   // 👉 Bắt buộc true cho port 465
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASSWORD,
   },
-  family: 4,       // Ép dùng IPv4 (Chìa khóa sửa lỗi Timeout)
-  logger: true,    // Bật log để xem chi tiết
-  debug: true,     // Bật debug
-  tls: {
-    ciphers: "SSLv3", // Giúp tương thích tốt hơn
-    rejectUnauthorized: false, // Bỏ qua lỗi chứng chỉ (nếu có)
-  },
-  connectionTimeout: 10000, // Tăng thời gian chờ kết nối lên 10s (mặc định là 2s)
-  greetingTimeout: 10000, // Tăng thời gian chờ Google chào hỏi
-  socketTimeout: 10000,
+  // 👇 ĐÂY LÀ DÒNG QUAN TRỌNG NHẤT ĐỂ SỬA LỖI TIMEOUT
+  family: 4,      // 🛑 Ép buộc dùng IPv4, chặn IPv6 (nguyên nhân gây treo)
+  
+  // Các cấu hình timeout và log
+  logger: true,
+  debug: true,
+  connectionTimeout: 10000,
 });
 
 transporter.verify((error, success) => {
@@ -34,12 +29,17 @@ transporter.verify((error, success) => {
 });
 
 export const sendMail = async (to, subject, html) => {
-  const message = {
-    from: process.env.EMAIL_USER,
-    to,
-    subject,
-    html,
-  };
-  const result = await transporter.sendMail(message);
-  return result;
+  try {
+    const message = {
+      from: process.env.EMAIL_USER,
+      to,
+      subject,
+      html,
+    };
+    const result = await transporter.sendMail(message);
+    return result;
+  } catch (err) {
+    console.error("Gửi mail thất bại:", err);
+    throw err;
+  }
 };

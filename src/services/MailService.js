@@ -7,12 +7,15 @@ dotenv.config();
 export const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   service: "Gmail",
-  port: 587,
-  secure: false, // Use `true` for port 465, `false` for all other ports
+  port: 465,
+  secure: true, // Use `true` for port 465, `false` for all other ports
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASSWORD,
   },
+  family: 4,       // Ép dùng IPv4 (Chìa khóa sửa lỗi Timeout)
+  logger: true,    // Bật log để xem chi tiết
+  debug: true,     // Bật debug
   tls: {
     ciphers: "SSLv3", // Giúp tương thích tốt hơn
     rejectUnauthorized: false, // Bỏ qua lỗi chứng chỉ (nếu có)

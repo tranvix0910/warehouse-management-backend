@@ -1,18 +1,33 @@
-import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer";
 
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 
 dotenv.config();
 
 export const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  service: 'Gmail',
+  host: "smtp.gmail.com",
+  service: "Gmail",
   port: 587,
   secure: false, // Use `true` for port 465, `false` for all other ports
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASSWORD,
   },
+  tls: {
+    ciphers: "SSLv3", // Giúp tương thích tốt hơn
+    rejectUnauthorized: false, // Bỏ qua lỗi chứng chỉ (nếu có)
+  },
+  connectionTimeout: 10000, // Tăng thời gian chờ kết nối lên 10s (mặc định là 2s)
+  greetingTimeout: 10000, // Tăng thời gian chờ Google chào hỏi
+  socketTimeout: 10000,
+});
+
+transporter.verify((error, success) => {
+  if (error) {
+    console.error("❌ Transporter Verify Error:", error);
+  } else {
+    console.log("✅ Server is ready to take our messages");
+  }
 });
 
 export const sendMail = async (to, subject, html) => {

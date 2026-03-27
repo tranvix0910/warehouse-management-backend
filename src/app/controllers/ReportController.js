@@ -100,6 +100,28 @@ export const getOldStock = async (req, res) => {
       });
     }
 
+    const { page, limit } = req.query;
+
+    // If page & limit provided → paginate manually (in-memory filtering)
+    if (page && limit) {
+      const pageNum = Math.max(1, parseInt(page));
+      const limitNum = Math.max(1, parseInt(limit));
+      const skip = (pageNum - 1) * limitNum;
+      const paginatedResult = result.slice(skip, skip + limitNum);
+
+      return res.status(200).json({
+        success: true,
+        message: "Get old stock successfully",
+        data: paginatedResult,
+        pagination: {
+          page: pageNum,
+          limit: limitNum,
+          total: result.length,
+          totalPages: Math.ceil(result.length / limitNum),
+        },
+      });
+    }
+
     return res.status(200).json({
       success: true,
       message: "Get old stock successfully",
@@ -119,8 +141,35 @@ export const getOutOfStock = async (req, res) => {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    // 2) Lấy sản phẩm có quantity = 0
-    const outOfStockProducts = await ProductModel.find({ quantity: 0 });
+    const { page, limit } = req.query;
+    const filter = { quantity: 0 };
+
+    // If page & limit provided → paginate
+    if (page && limit) {
+      const pageNum = Math.max(1, parseInt(page));
+      const limitNum = Math.max(1, parseInt(limit));
+      const skip = (pageNum - 1) * limitNum;
+
+      const [outOfStockProducts, total] = await Promise.all([
+        ProductModel.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limitNum),
+        ProductModel.countDocuments(filter),
+      ]);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Get out of stock successfully',
+        data: outOfStockProducts,
+        pagination: {
+          page: pageNum,
+          limit: limitNum,
+          total,
+          totalPages: Math.ceil(total / limitNum),
+        },
+      });
+    }
+
+    // No pagination → return all
+    const outOfStockProducts = await ProductModel.find(filter);
 
     return res.status(200).json({
       success: true,
@@ -131,7 +180,7 @@ export const getOutOfStock = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
-  
+
 export const getLowStock = async (req, res) => {
   const userId = req.user._id;
   try {
@@ -141,10 +190,35 @@ export const getLowStock = async (req, res) => {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    // 2) Lấy sản phẩm có quantity < 10 và > 0
-    const lowStockProducts = await ProductModel.find({
-      quantity: { $gt: 0, $lt: 10 },
-    });
+    const { page, limit } = req.query;
+    const filter = { quantity: { $gt: 0, $lt: 10 } };
+
+    // If page & limit provided → paginate
+    if (page && limit) {
+      const pageNum = Math.max(1, parseInt(page));
+      const limitNum = Math.max(1, parseInt(limit));
+      const skip = (pageNum - 1) * limitNum;
+
+      const [lowStockProducts, total] = await Promise.all([
+        ProductModel.find(filter).sort({ quantity: 1 }).skip(skip).limit(limitNum),
+        ProductModel.countDocuments(filter),
+      ]);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Get low stock successfully',
+        data: lowStockProducts,
+        pagination: {
+          page: pageNum,
+          limit: limitNum,
+          total,
+          totalPages: Math.ceil(total / limitNum),
+        },
+      });
+    }
+
+    // No pagination → return all
+    const lowStockProducts = await ProductModel.find(filter);
 
     return res.status(200).json({
       success: true,

@@ -12,8 +12,8 @@ const router = express.Router();
 
 router.post('/', verifyToken, createSupplier);
 router.get('/', verifyToken, getAllSuppliers);
+router.put('/favorite/:id', verifyToken, toggleFavoriteSupplier);
 router.put('/:id', verifyToken, updateSupplier);
 router.delete('/:id', verifyToken, deleteSupplier);
-router.put('/favorite/:id', verifyToken, toggleFavoriteSupplier);
 
 export default router;

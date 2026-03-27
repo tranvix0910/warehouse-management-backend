@@ -120,12 +120,52 @@ export const getAllTransaction = async (req, res) => {
       });
     }
 
-    // Lấy danh sách transaction của user, sort theo ngày mới nhất
-    // Populate chi tiết sản phẩm trong items
-    const transactions = await TransactionModel.find()
-      .populate({
-        path: "items.product",
-      })
+    const { page, limit, search, type } = req.query;
+
+    // Build filter query
+    const filter = {};
+    if (type && ["stock_in", "stock_out"].includes(type)) {
+      filter.type = type;
+    }
+    if (search) {
+      filter.$or = [
+        { note: { $regex: search, $options: "i" } },
+        { supplier: { $regex: search, $options: "i" } },
+        { customer: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    // If page & limit provided → paginate, otherwise return all (backward compatible)
+    if (page && limit) {
+      const pageNum = Math.max(1, parseInt(page));
+      const limitNum = Math.max(1, parseInt(limit));
+      const skip = (pageNum - 1) * limitNum;
+
+      const [transactions, total] = await Promise.all([
+        TransactionModel.find(filter)
+          .populate({ path: "items.product" })
+          .sort({ date: -1 })
+          .skip(skip)
+          .limit(limitNum),
+        TransactionModel.countDocuments(filter),
+      ]);
+
+      return res.status(200).json({
+        success: true,
+        message: "Get transactions successfully",
+        data: transactions,
+        pagination: {
+          page: pageNum,
+          limit: limitNum,
+          total,
+          totalPages: Math.ceil(total / limitNum),
+        },
+      });
+    }
+
+    // No pagination → return all
+    const transactions = await TransactionModel.find(filter)
+      .populate({ path: "items.product" })
       .sort({ date: -1 });
 
     return res.status(200).json({

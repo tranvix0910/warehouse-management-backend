@@ -19,6 +19,7 @@
   "homepage": "https://github.com/tranvix0910/warehouse-management-backend#readme",
   "description": "",
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^1.21.0",
     "cookie-parser": "^1.4.7",

@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import swaggerUi from "swagger-ui-express";
-import swaggerDocument from "./document/swagger.json" with { type: "json" } ;
+import swaggerDocument from "./document/swagger.json" with { type: "json" };
 
 // import routes
 import authRoutes from "./routes/auth.js";
@@ -15,6 +15,8 @@ import transactionRoutes from './routes/transaction.js'
 import supplierRoutes from './routes/supplier.js'
 import customerRoutes from './routes/customers.js'
 import reportRoutes from './routes/report.js'
+import aiRoutes from './routes/ai.js'
+import settingsRoutes from './routes/settings.js'
 
 dotenv.config();
 
@@ -51,6 +53,8 @@ app.use("/api/v1/transactions", transactionRoutes)
 app.use("/api/v1/suppliers", supplierRoutes)
 app.use("/api/v1/customers", customerRoutes)
 app.use("/api/v1/reports", reportRoutes)
+app.use("/api/v1/ai", aiRoutes)
+app.use("/api/v1/settings", settingsRoutes)
 
 app.listen(port, () => {
   connectDB();

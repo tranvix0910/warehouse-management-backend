@@ -11,12 +11,48 @@ export const getAllProducts = async (req, res) => {
         .status(404)
         .json({ success: false, message: "User not found" });
     }
-    const products = await ProductModel.find();
-    if (!products) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Products doesn't exist" });
+
+    const { page, limit, search } = req.query;
+
+    // Build filter query
+    const filter = {};
+    if (search) {
+      filter.$or = [
+        { productName: { $regex: search, $options: "i" } },
+        { SKU: { $regex: search, $options: "i" } },
+        { category: { $regex: search, $options: "i" } },
+      ];
     }
+
+    // If page & limit provided → paginate, otherwise return all (backward compatible)
+    if (page && limit) {
+      const pageNum = Math.max(1, parseInt(page));
+      const limitNum = Math.max(1, parseInt(limit));
+      const skip = (pageNum - 1) * limitNum;
+
+      const [products, total] = await Promise.all([
+        ProductModel.find(filter)
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(limitNum),
+        ProductModel.countDocuments(filter),
+      ]);
+
+      return res.status(200).json({
+        success: true,
+        message: "Get products success",
+        data: products,
+        pagination: {
+          page: pageNum,
+          limit: limitNum,
+          total,
+          totalPages: Math.ceil(total / limitNum),
+        },
+      });
+    }
+
+    // No pagination → return all
+    const products = await ProductModel.find(filter).sort({ createdAt: -1 });
     return res
       .status(200)
       .json({ success: true, message: "Get products success", data: products });

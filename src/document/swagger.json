@@ -15,7 +15,9 @@
     "/api/v1/auth/register": {
       "post": {
         "summary": "Đăng ký tài khoản",
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -23,26 +25,47 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "email": { "type": "string", "example": "user@example.com" },
-                  "username": { "type": "string", "example": "phatnguyen" },
-                  "password": { "type": "string", "example": "123456" }
+                  "email": {
+                    "type": "string",
+                    "example": "user@example.com"
+                  },
+                  "username": {
+                    "type": "string",
+                    "example": "phatnguyen"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "123456"
+                  }
                 },
-                "required": ["email", "username", "password"]
+                "required": [
+                  "email",
+                  "username",
+                  "password"
+                ]
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Đăng ký thành công" },
-          "400": { "description": "Email đã được sử dụng" },
-          "500": { "description": "Lỗi server" }
+          "200": {
+            "description": "Đăng ký thành công"
+          },
+          "400": {
+            "description": "Email đã được sử dụng"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
         }
       }
     },
     "/api/v1/auth/login": {
       "post": {
         "summary": "Đăng nhập hệ thống",
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -50,10 +73,19 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "email": { "type": "string", "example": "user@example.com" },
-                  "password": { "type": "string", "example": "123456" }
+                  "email": {
+                    "type": "string",
+                    "example": "user@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "123456"
+                  }
                 },
-                "required": ["email", "password"]
+                "required": [
+                  "email",
+                  "password"
+                ]
               }
             }
           }
@@ -62,16 +94,24 @@
           "200": {
             "description": "Đăng nhập thành công (trả về accessToken và refreshToken)"
           },
-          "400": { "description": "Sai mật khẩu" },
-          "404": { "description": "Email không tồn tại" },
-          "500": { "description": "Lỗi server" }
+          "400": {
+            "description": "Sai mật khẩu"
+          },
+          "404": {
+            "description": "Email không tồn tại"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
         }
       }
     },
     "/api/v1/auth/refreshToken": {
       "post": {
         "summary": "Làm mới access token",
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "description": "Dùng refreshToken để lấy accessToken mới. \n- Web: refreshToken thường lưu trong cookie (httpOnly). \n- Mobile app: refreshToken có thể được gửi trong body.",
         "requestBody": {
           "required": false,
@@ -121,7 +161,9 @@
     "/api/v1/auth/verify-otp": {
       "post": {
         "summary": "Xác thực mã OTP",
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "description": "Xác thực mã OTP 6 chữ số để verify email sau khi đăng ký",
         "requestBody": {
           "required": true,
@@ -141,7 +183,10 @@
                     "description": "Mã OTP 6 chữ số"
                   }
                 },
-                "required": ["email", "otp"]
+                "required": [
+                  "email",
+                  "otp"
+                ]
               }
             }
           }
@@ -208,7 +253,9 @@
     "/api/v1/auth/resend-otp": {
       "post": {
         "summary": "Gửi lại mã OTP",
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "description": "Gửi lại mã OTP mới khi mã cũ hết hạn hoặc không nhận được",
         "requestBody": {
           "required": true,
@@ -223,7 +270,9 @@
                     "description": "Email đã đăng ký nhưng chưa verify"
                   }
                 },
-                "required": ["email"]
+                "required": [
+                  "email"
+                ]
               }
             }
           }
@@ -271,7 +320,9 @@
     "/api/v1/auth/logout": {
       "post": {
         "summary": "Đăng xuất",
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "description": "Xoá refresh token phía client",
         "security": [
           {
@@ -291,7 +342,9 @@
     "/api/v1/user/info": {
       "get": {
         "summary": "Lấy thông tin người dùng",
-        "tags": ["User"],
+        "tags": [
+          "User"
+        ],
         "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token).",
         "security": [
           {
@@ -329,7 +382,9 @@
     "/api/v1/user/change": {
       "put": {
         "summary": "Cập nhật thông tin người dùng",
-        "tags": ["User"],
+        "tags": [
+          "User"
+        ],
         "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token).",
         "security": [
           {
@@ -343,10 +398,19 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "username": { "type": "string" },
-                  "surName": { "type": "string" },
-                  "birthday": { "type": "string", "format": "date" },
-                  "company": { "type": "string" }
+                  "username": {
+                    "type": "string"
+                  },
+                  "surName": {
+                    "type": "string"
+                  },
+                  "birthday": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "company": {
+                    "type": "string"
+                  }
                 }
               }
             }
@@ -383,7 +447,9 @@
     "/api/v1/user/forgot-password": {
       "post": {
         "summary": "Quên mật khẩu - Gửi mã OTP",
-        "tags": ["User"],
+        "tags": [
+          "User"
+        ],
         "description": "Gửi mã OTP đến email để reset mật khẩu. Mã OTP có hiệu lực 5 phút.",
         "requestBody": {
           "required": true,
@@ -398,7 +464,9 @@
                     "description": "Email đã đăng ký"
                   }
                 },
-                "required": ["email"]
+                "required": [
+                  "email"
+                ]
               }
             }
           }
@@ -446,7 +514,9 @@
     "/api/v1/user/reset-password": {
       "post": {
         "summary": "Reset mật khẩu",
-        "tags": ["User"],
+        "tags": [
+          "User"
+        ],
         "description": "Xác thực mã OTP và đặt lại mật khẩu mới",
         "requestBody": {
           "required": true,
@@ -471,7 +541,11 @@
                     "description": "Mật khẩu mới"
                   }
                 },
-                "required": ["email", "otp", "newPassword"]
+                "required": [
+                  "email",
+                  "otp",
+                  "newPassword"
+                ]
               }
             }
           }
@@ -538,9 +612,15 @@
     "/api/v1/products/all": {
       "get": {
         "summary": "Lấy tất cả sản phẩm",
-        "tags": ["Product"],
+        "tags": [
+          "Product"
+        ],
         "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token).",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Danh sách sản phẩm",
@@ -585,23 +665,64 @@
               }
             }
           },
-          "404": { "description": "Không có sản phẩm nào" },
-          "500": { "description": "Lỗi server" }
-        }
+          "404": {
+            "description": "Không có sản phẩm nào"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Trang hiện tại (ví dụ: 1)"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Số lượng item trên mỗi trang (ví dụ: 10)"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Từ khóa tìm kiếm"
+          }
+        ]
       }
     },
     "/api/v1/products/single/{productId}": {
       "get": {
         "summary": "Lấy thông tin chi tiết sản phẩm",
-        "tags": ["Product"],
+        "tags": [
+          "Product"
+        ],
         "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token).",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "productId",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" },
+            "schema": {
+              "type": "string"
+            },
             "description": "ID của sản phẩm"
           }
         ],
@@ -628,15 +749,21 @@
               }
             }
           },
-          "404": { "description": "Không tìm thấy sản phẩm" },
-          "500": { "description": "Lỗi server" }
+          "404": {
+            "description": "Không tìm thấy sản phẩm"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
         }
       }
     },
     "/api/v1/products/create": {
       "post": {
         "summary": "Tạo sản phẩm mới",
-        "tags": ["Product"],
+        "tags": [
+          "Product"
+        ],
         "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token). Sản phẩm có thể kèm ảnh (upload qua Cloudinary).",
         "security": [
           {
@@ -659,26 +786,58 @@
                     "type": "string",
                     "example": "Laptop Dell XPS 13"
                   },
-                  "SKU": { "type": "string", "example": "DELLXPS13-001" },
-                  "barcode": { "type": "string", "example": "1234567890001" },
-                  "category": { "type": "string", "example": "Ultrabook" },
-                  "quantity": { "type": "integer", "example": 50 },
-                  "cost": { "type": "number", "example": 800 },
-                  "price": { "type": "number", "example": 1000 },
-                  "RAM": { "type": "string", "example": "16GB" },
+                  "SKU": {
+                    "type": "string",
+                    "example": "DELLXPS13-001"
+                  },
+                  "barcode": {
+                    "type": "string",
+                    "example": "1234567890001"
+                  },
+                  "category": {
+                    "type": "string",
+                    "example": "Ultrabook"
+                  },
+                  "quantity": {
+                    "type": "integer",
+                    "example": 50
+                  },
+                  "cost": {
+                    "type": "number",
+                    "example": 800
+                  },
+                  "price": {
+                    "type": "number",
+                    "example": 1000
+                  },
+                  "RAM": {
+                    "type": "string",
+                    "example": "16GB"
+                  },
                   "date": {
                     "type": "string",
                     "format": "date",
                     "example": "2023-09-01"
                   },
-                  "GPU": { "type": "string", "example": "Intel Iris Xe" },
-                  "color": { "type": "string", "example": "Silver" },
+                  "GPU": {
+                    "type": "string",
+                    "example": "Intel Iris Xe"
+                  },
+                  "color": {
+                    "type": "string",
+                    "example": "Silver"
+                  },
                   "processor": {
                     "type": "string",
                     "example": "Intel Core i7-1165G7"
                   }
                 },
-                "required": ["productName", "SKU", "price", "quantity"]
+                "required": [
+                  "productName",
+                  "SKU",
+                  "price",
+                  "quantity"
+                ]
               }
             }
           }
@@ -730,7 +889,9 @@
     "/api/v1/products/update/{productId}": {
       "put": {
         "summary": "Cập nhật sản phẩm",
-        "tags": ["Product"],
+        "tags": [
+          "Product"
+        ],
         "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token). Cập nhật thông tin sản phẩm, có thể kèm ảnh mới (upload qua Cloudinary).",
         "security": [
           {
@@ -742,7 +903,9 @@
             "name": "productId",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" },
+            "schema": {
+              "type": "string"
+            },
             "description": "ID của sản phẩm cần cập nhật"
           }
         ],
@@ -762,19 +925,43 @@
                     "type": "string",
                     "example": "Laptop Dell XPS 13 Updated"
                   },
-                  "SKU": { "type": "string", "example": "DELLXPS13-001" },
-                  "category": { "type": "string", "example": "Ultrabook" },
-                  "quantity": { "type": "integer", "example": 60 },
-                  "cost": { "type": "number", "example": 850 },
-                  "price": { "type": "number", "example": 1100 },
-                  "RAM": { "type": "string", "example": "32GB" },
+                  "SKU": {
+                    "type": "string",
+                    "example": "DELLXPS13-001"
+                  },
+                  "category": {
+                    "type": "string",
+                    "example": "Ultrabook"
+                  },
+                  "quantity": {
+                    "type": "integer",
+                    "example": 60
+                  },
+                  "cost": {
+                    "type": "number",
+                    "example": 850
+                  },
+                  "price": {
+                    "type": "number",
+                    "example": 1100
+                  },
+                  "RAM": {
+                    "type": "string",
+                    "example": "32GB"
+                  },
                   "date": {
                     "type": "string",
                     "format": "date",
                     "example": "2024-01-15"
                   },
-                  "GPU": { "type": "string", "example": "Intel Iris Xe Graphics" },
-                  "color": { "type": "string", "example": "Black" },
+                  "GPU": {
+                    "type": "string",
+                    "example": "Intel Iris Xe Graphics"
+                  },
+                  "color": {
+                    "type": "string",
+                    "example": "Black"
+                  },
                   "processor": {
                     "type": "string",
                     "example": "Intel Core i7-1185G7"
@@ -829,7 +1016,9 @@
     "/api/v1/products/delete/{productId}": {
       "delete": {
         "summary": "Xóa sản phẩm",
-        "tags": ["Product"],
+        "tags": [
+          "Product"
+        ],
         "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token). Xóa sản phẩm khỏi hệ thống.",
         "security": [
           {
@@ -841,7 +1030,9 @@
             "name": "productId",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" },
+            "schema": {
+              "type": "string"
+            },
             "description": "ID của sản phẩm cần xóa"
           }
         ],
@@ -872,9 +1063,15 @@
     "/api/v1/transactions": {
       "get": {
         "summary": "Lấy danh sách giao dịch (transactions)",
-        "tags": ["Transaction"],
+        "tags": [
+          "Transaction"
+        ],
         "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token). Trả về danh sách giao dịch, đã populate chi tiết sản phẩm trong items.",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Danh sách transactions",
@@ -926,17 +1123,69 @@
               }
             }
           },
-          "401": { "description": "Không có hoặc sai accessToken" },
-          "500": { "description": "Lỗi server" }
-        }
+          "401": {
+            "description": "Không có hoặc sai accessToken"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Trang hiện tại (ví dụ: 1)"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Số lượng item trên mỗi trang (ví dụ: 10)"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Từ khóa tìm kiếm"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "stock_in",
+                "stock_out"
+              ]
+            },
+            "description": "Loại giao dịch (stock_in hoặc stock_out)"
+          }
+        ]
       }
     },
     "/api/v1/transactions/create": {
       "post": {
         "summary": "Tạo giao dịch mới",
-        "tags": ["Transaction"],
+        "tags": [
+          "Transaction"
+        ],
         "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token). Cập nhật tồn kho theo type và lưu transaction.",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -946,12 +1195,24 @@
                 "properties": {
                   "type": {
                     "type": "string",
-                    "enum": ["stock_in", "stock_out"],
+                    "enum": [
+                      "stock_in",
+                      "stock_out"
+                    ],
                     "example": "stock_in"
                   },
-                  "supplier": { "type": "string", "example": "Acer Corporation" },
-                  "customer": { "type": "string", "example": "John Carter" },
-                  "note": { "type": "string", "example": "Nhập hàng đợt 1" },
+                  "supplier": {
+                    "type": "string",
+                    "example": "Acer Corporation"
+                  },
+                  "customer": {
+                    "type": "string",
+                    "example": "John Carter"
+                  },
+                  "note": {
+                    "type": "string",
+                    "example": "Nhập hàng đợt 1"
+                  },
                   "date": {
                     "type": "string",
                     "format": "date-time",
@@ -962,14 +1223,26 @@
                     "items": {
                       "type": "object",
                       "properties": {
-                        "product": { "type": "string", "example": "66f3a1b2c3d4e5f6a7b8c111" },
-                        "quantity": { "type": "integer", "example": 5 }
+                        "product": {
+                          "type": "string",
+                          "example": "66f3a1b2c3d4e5f6a7b8c111"
+                        },
+                        "quantity": {
+                          "type": "integer",
+                          "example": 5
+                        }
                       },
-                      "required": ["product", "quantity"]
+                      "required": [
+                        "product",
+                        "quantity"
+                      ]
                     }
                   }
                 },
-                "required": ["type", "items"]
+                "required": [
+                  "type",
+                  "items"
+                ]
               }
             }
           }
@@ -987,8 +1260,14 @@
                     "type": "stock_out",
                     "quantity": 3,
                     "items": [
-                      { "product": "66f3a1b2c3d4e5f6a7b8c111", "quantity": 1 },
-                      { "product": "66f3a1b2c3d4e5f6a7b8c112", "quantity": 2 }
+                      {
+                        "product": "66f3a1b2c3d4e5f6a7b8c111",
+                        "quantity": 1
+                      },
+                      {
+                        "product": "66f3a1b2c3d4e5f6a7b8c112",
+                        "quantity": 2
+                      }
                     ],
                     "supplier": null,
                     "customer": "Sarah Williams",
@@ -1001,25 +1280,41 @@
               }
             }
           },
-          "400": { "description": "Payload không hợp lệ hoặc thiếu hàng khi stock_out" },
-          "401": { "description": "Không có hoặc sai accessToken" },
-          "404": { "description": "Không tìm thấy user hoặc product" },
-          "500": { "description": "Lỗi server" }
+          "400": {
+            "description": "Payload không hợp lệ hoặc thiếu hàng khi stock_out"
+          },
+          "401": {
+            "description": "Không có hoặc sai accessToken"
+          },
+          "404": {
+            "description": "Không tìm thấy user hoặc product"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
         }
       }
     },
     "/api/v1/transactions/{id}": {
       "put": {
         "summary": "Cập nhật giao dịch",
-        "tags": ["Transaction"],
+        "tags": [
+          "Transaction"
+        ],
         "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token). Cập nhật thông tin giao dịch và điều chỉnh tồn kho tương ứng.",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" },
+            "schema": {
+              "type": "string"
+            },
             "description": "ID của giao dịch"
           }
         ],
@@ -1030,9 +1325,18 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "supplier": { "type": "string", "example": "Acer Corporation" },
-                  "customer": { "type": "string", "example": "John Carter" },
-                  "note": { "type": "string", "example": "Cập nhật ghi chú giao dịch" },
+                  "supplier": {
+                    "type": "string",
+                    "example": "Acer Corporation"
+                  },
+                  "customer": {
+                    "type": "string",
+                    "example": "John Carter"
+                  },
+                  "note": {
+                    "type": "string",
+                    "example": "Cập nhật ghi chú giao dịch"
+                  },
                   "date": {
                     "type": "string",
                     "format": "date-time",
@@ -1043,10 +1347,19 @@
                     "items": {
                       "type": "object",
                       "properties": {
-                        "product": { "type": "string", "example": "66f3a1b2c3d4e5f6a7b8c111" },
-                        "quantity": { "type": "integer", "example": 5 }
+                        "product": {
+                          "type": "string",
+                          "example": "66f3a1b2c3d4e5f6a7b8c111"
+                        },
+                        "quantity": {
+                          "type": "integer",
+                          "example": 5
+                        }
                       },
-                      "required": ["product", "quantity"]
+                      "required": [
+                        "product",
+                        "quantity"
+                      ]
                     }
                   }
                 }
@@ -1067,8 +1380,14 @@
                     "type": "stock_in",
                     "quantity": 5,
                     "items": [
-                      { "product": "66f3a1b2c3d4e5f6a7b8c111", "quantity": 3 },
-                      { "product": "66f3a1b2c3d4e5f6a7b8c112", "quantity": 2 }
+                      {
+                        "product": "66f3a1b2c3d4e5f6a7b8c111",
+                        "quantity": 3
+                      },
+                      {
+                        "product": "66f3a1b2c3d4e5f6a7b8c112",
+                        "quantity": 2
+                      }
                     ],
                     "supplier": "Dell Corporation",
                     "customer": null,
@@ -1081,23 +1400,39 @@
               }
             }
           },
-          "400": { "description": "Payload không hợp lệ hoặc thiếu hàng khi cập nhật" },
-          "401": { "description": "Không có hoặc sai accessToken" },
-          "404": { "description": "Không tìm thấy user, transaction hoặc product" },
-          "500": { "description": "Lỗi server" }
+          "400": {
+            "description": "Payload không hợp lệ hoặc thiếu hàng khi cập nhật"
+          },
+          "401": {
+            "description": "Không có hoặc sai accessToken"
+          },
+          "404": {
+            "description": "Không tìm thấy user, transaction hoặc product"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
         }
       },
       "delete": {
         "summary": "Xóa giao dịch",
-        "tags": ["Transaction"],
+        "tags": [
+          "Transaction"
+        ],
         "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token). Xóa giao dịch và hoàn tác các thay đổi tồn kho.",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" },
+            "schema": {
+              "type": "string"
+            },
             "description": "ID của giao dịch"
           }
         ],
@@ -1113,19 +1448,33 @@
               }
             }
           },
-          "400": { "description": "Không thể xóa giao dịch: không đủ hàng tồn kho để hoàn tác" },
-          "401": { "description": "Không có hoặc sai accessToken" },
-          "404": { "description": "Không tìm thấy user hoặc transaction" },
-          "500": { "description": "Lỗi server" }
+          "400": {
+            "description": "Không thể xóa giao dịch: không đủ hàng tồn kho để hoàn tác"
+          },
+          "401": {
+            "description": "Không có hoặc sai accessToken"
+          },
+          "404": {
+            "description": "Không tìm thấy user hoặc transaction"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
         }
       }
     },
     "/api/v1/customers": {
       "get": {
         "summary": "Lấy danh sách khách hàng",
-        "tags": ["Customer"],
+        "tags": [
+          "Customer"
+        ],
         "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token). Trả về danh sách khách hàng, sắp xếp yêu thích trước và theo tên tăng dần.",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Danh sách khách hàng",
@@ -1151,16 +1500,57 @@
               }
             }
           },
-          "401": { "description": "Không có hoặc sai accessToken" },
-          "404": { "description": "Không tìm thấy user" },
-          "500": { "description": "Lỗi server" }
-        }
+          "401": {
+            "description": "Không có hoặc sai accessToken"
+          },
+          "404": {
+            "description": "Không tìm thấy user"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Trang hiện tại (ví dụ: 1)"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Số lượng item trên mỗi trang (ví dụ: 10)"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Từ khóa tìm kiếm"
+          }
+        ]
       },
       "post": {
         "summary": "Tạo khách hàng mới",
-        "tags": ["Customer"],
+        "tags": [
+          "Customer"
+        ],
         "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token).",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -1168,13 +1558,33 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "name": { "type": "string", "example": "John Carter" },
-                  "email": { "type": "string", "example": "john.carter@example.com" },
-                  "address": { "type": "string", "example": "123 Main St, New York, USA" },
-                  "notes": { "type": "string", "example": "Khách VIP" },
-                  "phone": { "type": "integer", "example": 84987654321 }
+                  "name": {
+                    "type": "string",
+                    "example": "John Carter"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "john.carter@example.com"
+                  },
+                  "address": {
+                    "type": "string",
+                    "example": "123 Main St, New York, USA"
+                  },
+                  "notes": {
+                    "type": "string",
+                    "example": "Khách VIP"
+                  },
+                  "phone": {
+                    "type": "integer",
+                    "example": 84987654321
+                  }
                 },
-                "required": ["name", "email", "address", "phone"]
+                "required": [
+                  "name",
+                  "email",
+                  "address",
+                  "phone"
+                ]
               }
             }
           }
@@ -1202,24 +1612,38 @@
               }
             }
           },
-          "401": { "description": "Không có hoặc sai accessToken" },
-          "404": { "description": "Không tìm thấy user" },
-          "500": { "description": "Lỗi server" }
+          "401": {
+            "description": "Không có hoặc sai accessToken"
+          },
+          "404": {
+            "description": "Không tìm thấy user"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
         }
       }
     },
     "/api/v1/customers/favorite/{id}": {
       "put": {
         "summary": "Chuyển trạng thái yêu thích khách hàng",
-        "tags": ["Customer"],
+        "tags": [
+          "Customer"
+        ],
         "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token).",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" },
+            "schema": {
+              "type": "string"
+            },
             "description": "ID khách hàng"
           }
         ],
@@ -1240,18 +1664,30 @@
               }
             }
           },
-          "401": { "description": "Không có hoặc sai accessToken" },
-          "404": { "description": "Không tìm thấy user hoặc customer" },
-          "500": { "description": "Lỗi server" }
+          "401": {
+            "description": "Không có hoặc sai accessToken"
+          },
+          "404": {
+            "description": "Không tìm thấy user hoặc customer"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
         }
       }
     },
     "/api/v1/suppliers": {
       "get": {
         "summary": "Lấy danh sách nhà cung cấp",
-        "tags": ["Supplier"],
+        "tags": [
+          "Supplier"
+        ],
         "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token). Trả về danh sách nhà cung cấp, sắp xếp yêu thích trước và theo tên tăng dần.",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Danh sách nhà cung cấp",
@@ -1277,16 +1713,57 @@
               }
             }
           },
-          "401": { "description": "Không có hoặc sai accessToken" },
-          "404": { "description": "Không tìm thấy user" },
-          "500": { "description": "Lỗi server" }
-        }
+          "401": {
+            "description": "Không có hoặc sai accessToken"
+          },
+          "404": {
+            "description": "Không tìm thấy user"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Trang hiện tại (ví dụ: 1)"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Số lượng item trên mỗi trang (ví dụ: 10)"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Từ khóa tìm kiếm"
+          }
+        ]
       },
       "post": {
         "summary": "Tạo nhà cung cấp mới",
-        "tags": ["Supplier"],
+        "tags": [
+          "Supplier"
+        ],
         "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token).",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -1294,16 +1771,33 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "name": { "type": "string", "example": "Acer Corporation" },
-                  "email": { "type": "string", "example": "contact@acer.com" },
+                  "name": {
+                    "type": "string",
+                    "example": "Acer Corporation"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "contact@acer.com"
+                  },
                   "address": {
                     "type": "string",
                     "example": "157-1, Baoqiao Rd, Xizhi District, New Taipei City"
                   },
-                  "notes": { "type": "string", "example": "Ưu tiên thanh toán 30 ngày" },
-                  "phone": { "type": "integer", "example": 123456789 }
+                  "notes": {
+                    "type": "string",
+                    "example": "Ưu tiên thanh toán 30 ngày"
+                  },
+                  "phone": {
+                    "type": "integer",
+                    "example": 123456789
+                  }
                 },
-                "required": ["name", "email", "address", "phone"]
+                "required": [
+                  "name",
+                  "email",
+                  "address",
+                  "phone"
+                ]
               }
             }
           }
@@ -1331,24 +1825,38 @@
               }
             }
           },
-          "401": { "description": "Không có hoặc sai accessToken" },
-          "404": { "description": "Không tìm thấy user" },
-          "500": { "description": "Lỗi server" }
+          "401": {
+            "description": "Không có hoặc sai accessToken"
+          },
+          "404": {
+            "description": "Không tìm thấy user"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
         }
       }
     },
     "/api/v1/suppliers/{id}": {
       "put": {
         "summary": "Cập nhật thông tin nhà cung cấp",
-        "tags": ["Supplier"],
+        "tags": [
+          "Supplier"
+        ],
         "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token).",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" },
+            "schema": {
+              "type": "string"
+            },
             "description": "ID nhà cung cấp"
           }
         ],
@@ -1359,58 +1867,102 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "name": { "type": "string" },
-                  "email": { "type": "string" },
-                  "address": { "type": "string" },
-                  "notes": { "type": "string" },
-                  "phone": { "type": "integer" },
-                  "isFavorite": { "type": "boolean" }
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "address": {
+                    "type": "string"
+                  },
+                  "notes": {
+                    "type": "string"
+                  },
+                  "phone": {
+                    "type": "integer"
+                  },
+                  "isFavorite": {
+                    "type": "boolean"
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Cập nhật thành công" },
-          "401": { "description": "Không có hoặc sai accessToken" },
-          "404": { "description": "Không tìm thấy user hoặc supplier" },
-          "500": { "description": "Lỗi server" }
+          "200": {
+            "description": "Cập nhật thành công"
+          },
+          "401": {
+            "description": "Không có hoặc sai accessToken"
+          },
+          "404": {
+            "description": "Không tìm thấy user hoặc supplier"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
         }
       },
       "delete": {
         "summary": "Xoá nhà cung cấp",
-        "tags": ["Supplier"],
+        "tags": [
+          "Supplier"
+        ],
         "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token).",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" },
+            "schema": {
+              "type": "string"
+            },
             "description": "ID nhà cung cấp"
           }
         ],
         "responses": {
-          "200": { "description": "Xoá thành công" },
-          "401": { "description": "Không có hoặc sai accessToken" },
-          "404": { "description": "Không tìm thấy user hoặc supplier" },
-          "500": { "description": "Lỗi server" }
+          "200": {
+            "description": "Xoá thành công"
+          },
+          "401": {
+            "description": "Không có hoặc sai accessToken"
+          },
+          "404": {
+            "description": "Không tìm thấy user hoặc supplier"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
         }
       }
     },
     "/api/v1/suppliers/favorite/{id}": {
       "put": {
         "summary": "Chuyển trạng thái yêu thích nhà cung cấp",
-        "tags": ["Supplier"],
+        "tags": [
+          "Supplier"
+        ],
         "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token).",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" },
+            "schema": {
+              "type": "string"
+            },
             "description": "ID nhà cung cấp"
           }
         ],
@@ -1431,18 +1983,30 @@
               }
             }
           },
-          "401": { "description": "Không có hoặc sai accessToken" },
-          "404": { "description": "Không tìm thấy user hoặc supplier" },
-          "500": { "description": "Lỗi server" }
+          "401": {
+            "description": "Không có hoặc sai accessToken"
+          },
+          "404": {
+            "description": "Không tìm thấy user hoặc supplier"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
         }
       }
     },
     "/api/v1/reports/summary": {
       "get": {
         "summary": "Lấy tổng quan báo cáo kho",
-        "tags": ["Report"],
+        "tags": [
+          "Report"
+        ],
         "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token). Trả về thống kê tổng quan về tình trạng kho hàng.",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Thống kê tổng quan kho hàng",
@@ -1461,18 +2025,30 @@
               }
             }
           },
-          "401": { "description": "Không có hoặc sai accessToken" },
-          "404": { "description": "Không tìm thấy user" },
-          "500": { "description": "Lỗi server" }
+          "401": {
+            "description": "Không có hoặc sai accessToken"
+          },
+          "404": {
+            "description": "Không tìm thấy user"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
         }
       }
     },
     "/api/v1/reports/old-stock": {
       "get": {
         "summary": "Lấy danh sách hàng tồn kho cũ",
-        "tags": ["Report"],
+        "tags": [
+          "Report"
+        ],
         "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token). Trả về danh sách sản phẩm không được nhập kho trong 30 ngày gần đây.",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Danh sách hàng tồn kho cũ",
@@ -1496,18 +2072,50 @@
               }
             }
           },
-          "401": { "description": "Không có hoặc sai accessToken" },
-          "404": { "description": "Không tìm thấy user" },
-          "500": { "description": "Lỗi server" }
-        }
+          "401": {
+            "description": "Không có hoặc sai accessToken"
+          },
+          "404": {
+            "description": "Không tìm thấy user"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Trang hiện tại (ví dụ: 1)"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Số lượng item trên mỗi trang (ví dụ: 10)"
+          }
+        ]
       }
     },
     "/api/v1/reports/out-of-stock": {
       "get": {
         "summary": "Lấy danh sách sản phẩm hết hàng",
-        "tags": ["Report"],
+        "tags": [
+          "Report"
+        ],
         "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token). Trả về danh sách sản phẩm có số lượng bằng 0.",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Danh sách sản phẩm hết hàng",
@@ -1531,18 +2139,50 @@
               }
             }
           },
-          "401": { "description": "Không có hoặc sai accessToken" },
-          "404": { "description": "Không tìm thấy user" },
-          "500": { "description": "Lỗi server" }
-        }
+          "401": {
+            "description": "Không có hoặc sai accessToken"
+          },
+          "404": {
+            "description": "Không tìm thấy user"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Trang hiện tại (ví dụ: 1)"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Số lượng item trên mỗi trang (ví dụ: 10)"
+          }
+        ]
       }
     },
     "/api/v1/reports/low-stock": {
       "get": {
         "summary": "Lấy danh sách sản phẩm sắp hết hàng",
-        "tags": ["Report"],
+        "tags": [
+          "Report"
+        ],
         "description": "Yêu cầu accessToken hợp lệ trong header Authorization (Bearer Token). Trả về danh sách sản phẩm có số lượng từ 1-9 (sắp hết hàng).",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Danh sách sản phẩm sắp hết hàng",
@@ -1566,9 +2206,184 @@
               }
             }
           },
-          "401": { "description": "Không có hoặc sai accessToken" },
-          "404": { "description": "Không tìm thấy user" },
-          "500": { "description": "Lỗi server" }
+          "401": {
+            "description": "Không có hoặc sai accessToken"
+          },
+          "404": {
+            "description": "Không tìm thấy user"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Trang hiện tại (ví dụ: 1)"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Số lượng item trên mỗi trang (ví dụ: 10)"
+          }
+        ]
+      }
+    },
+    "/api/v1/ai/chat": {
+      "post": {
+        "summary": "Hỏi đáp AI Chatbot về kho hàng",
+        "tags": [
+          "AI"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Sản phẩm nào sắp hết hàng?"
+                  }
+                },
+                "required": [
+                  "message"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Câu trả lời từ AI"
+          },
+          "500": {
+            "description": "Lỗi AI Service"
+          }
+        }
+      }
+    },
+    "/api/v1/ai/report": {
+      "get": {
+        "summary": "Tạo báo cáo tự động bằng AI",
+        "tags": [
+          "AI"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "weekly",
+                "monthly"
+              ],
+              "default": "weekly"
+            },
+            "description": "Kỳ báo cáo (weekly hoặc monthly)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Báo cáo Markdown từ AI"
+          },
+          "500": {
+            "description": "Lỗi AI Service"
+          }
+        }
+      }
+    },
+    "/api/v1/settings/gemini": {
+      "get": {
+        "summary": "Lấy cấu hình Gemini API Key",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trạng thái cấu hình API Key"
+          }
+        }
+      },
+      "put": {
+        "summary": "Cập nhật Gemini API Key",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "apiKey": {
+                    "type": "string",
+                    "example": "AIzaSy..."
+                  }
+                },
+                "required": [
+                  "apiKey"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cập nhật thành công"
+          },
+          "400": {
+            "description": "API Key không hợp lệ"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Xóa cấu hình Gemini API Key",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Xóa thành công"
+          }
         }
       }
     }

@@ -99,6 +99,7 @@ export const createProduct = async (req, res) => {
     GPU,
     color,
     processor,
+    zone,
   } = req.body;
 
   try {
@@ -153,6 +154,7 @@ export const createProduct = async (req, res) => {
       GPU,
       color,
       processor,
+      zone,
     });
 
     await newProduct.save();
@@ -189,6 +191,7 @@ export const updateProduct = async (req, res) => {
     GPU,
     color,
     processor,
+    zone,
   } = req.body;
 
   try {
@@ -241,6 +244,7 @@ export const updateProduct = async (req, res) => {
         GPU: GPU || product.GPU,
         color: color || product.color,
         processor: processor || product.processor,
+        zone: zone || product.zone,
       },
       { new: true }
     );

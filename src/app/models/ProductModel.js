@@ -42,6 +42,10 @@ const ProductSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    zone: {
+      type: String,
+      default: "Unassigned",
+    },
     quantity: {
       type: Number,
       required: true,

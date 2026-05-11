@@ -6,6 +6,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./document/swagger.json" with { type: "json" };
+import multer from "multer";
 
 // import routes
 import authRoutes from "./routes/auth.js";
@@ -55,6 +56,36 @@ app.use("/api/v1/customers", customerRoutes)
 app.use("/api/v1/reports", reportRoutes)
 app.use("/api/v1/ai", aiRoutes)
 app.use("/api/v1/settings", settingsRoutes)
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error("❌ Global error handler:", err);
+  console.error("❌ Error stack:", err.stack);
+  
+  // Multer errors
+  if (err instanceof multer.MulterError) {
+    return res.status(400).json({
+      success: false,
+      message: `File upload error: ${err.message}`,
+    });
+  }
+  
+  // Mongoose validation errors
+  if (err.name === "ValidationError") {
+    return res.status(400).json({
+      success: false,
+      message: "Validation error",
+      errors: Object.values(err.errors).map(e => e.message),
+    });
+  }
+  
+  // Default error
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || "Internal server error",
+    details: process.env.NODE_ENV === "development" ? err.stack : undefined,
+  });
+});
 
 app.listen(port, () => {
   connectDB();

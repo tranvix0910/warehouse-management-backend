@@ -102,6 +102,15 @@ export const createProduct = async (req, res) => {
   } = req.body;
 
   try {
+    // ✅ Validate required fields
+    if (!productName || !SKU || !quantity || !cost || !price || !RAM || !date || !GPU || !color || !processor) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields",
+        required: ["productName", "SKU", "quantity", "cost", "price", "RAM", "date", "GPU", "color", "processor", "image"],
+      });
+    }
+
     // ✅ Kiểm tra user
     const user = await UserModel.findById(userId);
     if (!user) {
@@ -123,6 +132,11 @@ export const createProduct = async (req, res) => {
     let imageUrl = null;
     if (req.file) {
       imageUrl = req.file.path; // Multer-Cloudinary trả về link
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: "Product image is required",
+      });
     }
 
     // ✅ Tạo sản phẩm mới
@@ -131,7 +145,7 @@ export const createProduct = async (req, res) => {
       productName,
       SKU,
       category,
-      quantity,
+      quantity: parseInt(quantity),
       cost,
       price,
       RAM,
@@ -150,10 +164,12 @@ export const createProduct = async (req, res) => {
     });
   } catch (error) {
     console.error("❌ Error creating product:", error);
+    console.error("❌ Error stack:", error.stack);
     return res.status(500).json({
       success: false,
       message: "Server error",
       error: error.message,
+      details: process.env.NODE_ENV === "development" ? error.stack : undefined,
     });
   }
 };

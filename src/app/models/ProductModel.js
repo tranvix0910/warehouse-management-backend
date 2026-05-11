@@ -50,6 +50,30 @@ const ProductSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    // RFID tracking fields (optional for backward compatibility)
+    rfidTag: {
+      tagId: {
+        type: String,
+      },
+      assignedAt: {
+        type: Date,
+      },
+    },
+    currentLocation: {
+      locationId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "locations",
+      },
+      locationName: {
+        type: String,
+      },
+      readerId: {
+        type: String,
+      },
+      updatedAt: {
+        type: Date,
+      },
+    },
   },
   { timestamps: true }
 );

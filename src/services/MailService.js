@@ -1,46 +1,43 @@
+import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 dotenv.config();
 
+// Tạo transporter với Gmail
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+});
+
+// Verify transporter khi khởi động
+transporter.verify((error, success) => {
+  if (error) {
+    console.error("❌ Lỗi kết nối Gmail:", error);
+  } else {
+    console.log("✅ Gmail SMTP sẵn sàng gửi mail");
+  }
+});
+
 export const sendMail = async (to, subject, html) => {
-  const url = "https://api.brevo.com/v3/smtp/email";
-  
-  const options = {
-    method: "POST",
-    headers: {
-      "accept": "application/json",
-      "content-type": "application/json",
-      "api-key": process.env.BREVO_API_KEY, // Lấy API Key từ Render
+  const mailOptions = {
+    from: {
+      name: "Nagav Inventory",
+      address: process.env.EMAIL_USER,
     },
-    body: JSON.stringify({
-      sender: { 
-        email: process.env.EMAIL_USER, // Email đăng nhập Brevo
-        name: "Nagav Inventory"        // Tên hiển thị tùy thích
-      },
-      to: [{ email: to }],
-      subject: subject,
-      htmlContent: html,
-    }),
+    to: to,
+    subject: subject,
+    html: html,
   };
 
   try {
-    console.log(`📨 Đang gửi API tới: ${to}...`);
-    const response = await fetch(url, options);
-    
-    if (!response.ok) {
-      // Nếu lỗi thì in chi tiết lỗi ra xem Brevo bảo gì
-      const errorDetail = await response.json();
-      console.error("❌ Lỗi từ Brevo API:", JSON.stringify(errorDetail, null, 2));
-      throw new Error("Gửi mail thất bại");
-    }
-
-    const data = await response.json();
-    console.log("✅ Gửi thành công !!");
-    return data;
-
+    console.log(`📨 Đang gửi email tới: ${to}...`);
+    const info = await transporter.sendMail(mailOptions);
+    console.log("✅ Gửi email thành công! Message ID:", info.messageId);
+    return info;
   } catch (error) {
-    console.error("❌ Lỗi mạng hoặc code:", error);
-    throw error;
+    console.error("❌ Lỗi gửi email:", error.message);
+    throw new Error(`Gửi mail thất bại: ${error.message}`);
   }
 };
-
-// Không cần hàm verify hay transporter nữa!

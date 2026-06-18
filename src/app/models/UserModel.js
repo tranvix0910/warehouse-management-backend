@@ -31,6 +31,14 @@ const UserSchema = new mongoose.Schema(
       default:
         'https://res.cloudinary.com/djmeybzjk/image/upload/v1756449865/pngfind.com-placeholder-png-6104451_awuxxc.png',
     },
+    phone: {
+      type: String,
+      default: '-',
+    },
+    address: {
+      type: String,
+      default: '-',
+    },
     teams: [
       {
         type: mongoose.Schema.Types.ObjectId,

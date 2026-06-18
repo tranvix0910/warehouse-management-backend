@@ -181,3 +181,86 @@ export const resetPassword = async (req, res) => {
     });
   }
 };
+
+// Cập nhật ảnh đại diện (avatar) của người dùng sử dụng file tải lên Cloudinary
+export const uploadAvatar = async (req, res) => {
+  const userId = req.user._id;
+
+  try {
+    // Kiểm tra xem file ảnh có được gửi lên không
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "No image file provided",
+      });
+    }
+
+    // Tìm và cập nhật thông tin avatar của người dùng
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    user.avatar = req.file.path; // Đường dẫn Cloudinary
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Avatar updated successfully",
+      data: {
+        avatar: user.avatar,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Server error during avatar upload",
+    });
+  }
+};
+
+// Lấy thông tin hồ sơ của người dùng (profile)
+export const getProfile = async (req, res) => {
+  const userId = req.user._id;
+  try {
+    const user = await UserModel.findById(userId).select("-password -otp");
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+    return res.status(200).json({ success: true, message: "Get profile success", data: user });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Cập nhật thông tin hồ sơ của người dùng (profile) bao gồm tên, số điện thoại, địa chỉ
+export const updateProfile = async (req, res) => {
+  const userId = req.user._id;
+  const { username, phone, address } = req.body;
+
+  try {
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    if (username !== undefined) user.username = username;
+    if (phone !== undefined) user.phone = phone;
+    if (address !== undefined) user.address = address;
+
+    await user.save();
+
+    const { password, otp, ...userWithoutSensitiveData } = user.toObject();
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      data: userWithoutSensitiveData,
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message || "Server error" });
+  }
+};
